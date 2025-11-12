@@ -295,15 +295,17 @@ input:checked + .toggle-slider:before {
     </div>
     
     <div id="loginError" style="display:none;background:rgba(239,68,68,0.1);border:1px solid #ef4444;color:#fca5a5;padding:14px;border-radius:10px;margin-bottom:24px;font-size:14px;text-align:center;">
-      ⚠️ Hatalı şifre!
+      Hatalı şifre!
     </div>
     
-    <button onclick="checkLogin()" style="width:100%;box-sizing:border-box;background:linear-gradient(135deg,#6366f1,#4f46e5);color:white;border:none;border-radius:12px;padding:18px;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 20px rgba(99,102,241,0.4);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+    <button id="loginButton" style="width:100%;box-sizing:border-box;background:linear-gradient(135deg,#6366f1,#4f46e5);color:white;border:none;border-radius:12px;padding:18px;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 20px rgba(99,102,241,0.4);">
       GİRİŞ YAP
     </button>
     
   </div>
 </div>
+
+
 
 <!-- SheetJS Library for Excel Export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -765,15 +767,59 @@ input:checked + .toggle-slider:before {
 <script>
 
 
-// Supabase Configuration
+// === SHA-256 HASH ===
+async function sha256(message) {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashHex;
+}
+
+// === GİRİŞ KONTROLÜ ===
+const VALID_PASSWORD_HASH = "0352337fdecfe1078dbc9815ab93fa22c3d0fb06149fc120a9d9ec460e766873";
+
+
+async function checkLogin() {
+  const password = document.getElementById('loginPassword').value;
+  const errorDiv = document.getElementById('loginError');
+  const passwordHash = await sha256(password);
+  
+  if (passwordHash === VALID_PASSWORD_HASH) {
+    sessionStorage.setItem('isLoggedIn', 'true');
+    errorDiv.style.display = 'none';
+    showMainContent();
+  } else {
+    errorDiv.style.display = 'block';
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('loginPassword').focus();
+  }
+}
+
+function showMainContent() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'block';
+}
+
+// Enter tuşu ile giriş
+document.addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    const loginScreen = document.getElementById('loginScreen');
+    if (loginScreen && loginScreen.style.display !== 'none') {
+      checkLogin();
+    }
+  }
+});
+
+// === SUPABASE ENTEGRASYONU ===
 const SUPABASE_URL = 'https://giluxnjfelgxsusipurj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdpbHV4bmpmZWxneHN1c2lwdXJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4ODg2NTEsImV4cCI6MjA3ODQ2NDY1MX0.WWvHIaA2tM3SgimrSl5IRzhwCII4MSWb8gr6DCf1Sm4';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Supabase'e veri kaydetme
+// Supabase'e kaydetme
 async function saveToSupabase(dataKey, dataValue) {
   try {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('app_data')
       .upsert({
         user_id: 'default',
@@ -785,18 +831,18 @@ async function saveToSupabase(dataKey, dataValue) {
       });
     
     if (error) {
-      console.error('Supabase kaydetme hatası:', error);
+      console.error('Supabase kaydetme hatasi:', error.message || error);
       return false;
     }
-    console.log('Supabase'e kaydedildi:', dataKey);
+    console.log('✓ Kaydedildi:', dataKey);
     return true;
   } catch (err) {
-    console.error('Supabase bağlantı hatası:', err);
+    console.error('Supabase baglanti hatasi:', err.message || err);
     return false;
   }
 }
 
-// Supabase'den veri okuma
+// Supabase'den okuma
 async function loadFromSupabase(dataKey) {
   try {
     const { data, error } = await supabase
@@ -807,77 +853,76 @@ async function loadFromSupabase(dataKey) {
       .single();
     
     if (error) {
-      if (error.code === 'PGRST116') {
-        console.log('Veri bulunamadı:', dataKey);
-        return null;
-      }
-      console.error('Supabase okuma hatası:', error);
+      if (error.code === 'PGRST116') return null;
+      console.error('Supabase okuma hatasi:', error.message || error);
       return null;
     }
     
-    console.log('Supabase'den yüklendi:', dataKey);
+    console.log('✓ Yüklendi:', dataKey);
     return data.data_value;
   } catch (err) {
-    console.error('Supabase bağlantı hatası:', err);
+    console.error('Supabase baglanti hatasi:', err.message || err);
     return null;
   }
 }
 
-// Tüm verileri Supabase'e senkronize et
+// Tüm verileri senkronize et
 async function syncToSupabase() {
-  console.log('Supabase senkronizasyonu başlıyor...');
+  console.log('📤 Supabase senkronize ediliyor...');
   
-  // Products
   const products = JSON.parse(localStorage.getItem('fiyatlar_v2') || '[]');
   await saveToSupabase('products', products);
   
-  // Projeler
   const projeler = JSON.parse(localStorage.getItem('projeler') || '{}');
   await saveToSupabase('projeler', projeler);
   
-  // Kar Oranları
   const karOranlari = JSON.parse(localStorage.getItem('karOranlari') || '{}');
   await saveToSupabase('karOranlari', karOranlari);
   
-  // Aktif Ürünler
   const aktifUrunler = JSON.parse(localStorage.getItem('aktifUrunler') || '{}');
   await saveToSupabase('aktifUrunler', aktifUrunler);
   
-  // USD Kur
   const usdKur = localStorage.getItem('usdKur') || '34.50';
   await saveToSupabase('usdKur', parseFloat(usdKur));
   
-  console.log('Supabase senkronizasyonu tamamlandı!');
+  console.log('✅ Senkronizasyon tamamlandı!');
 }
 
 // Supabase'den tüm verileri yükle
 async function loadFromSupabaseAll() {
-  console.log('Supabase'den veriler yükleniyor...');
+  console.log('📥 Supabase veriler yükleniyor...');
   
-  // Products
   const products = await loadFromSupabase('products');
-  if (products) localStorage.setItem('fiyatlar_v2', JSON.stringify(products));
+  if (products && products.length > 0) {
+    localStorage.setItem('fiyatlar_v2', JSON.stringify(products));
+  } else {
+    console.log('Supabase\'den products yuklenemedi, localStorage kullaniliyor');
+  }
   
-  // Projeler
   const projeler = await loadFromSupabase('projeler');
-  if (projeler) localStorage.setItem('projeler', JSON.stringify(projeler));
+  if (projeler && Object.keys(projeler).length > 0) {
+    localStorage.setItem('projeler', JSON.stringify(projeler));
+  }
   
-  // Kar Oranları
   const karOranlari = await loadFromSupabase('karOranlari');
-  if (karOranlari) localStorage.setItem('karOranlari', JSON.stringify(karOranlari));
+  if (karOranlari) {
+    localStorage.setItem('karOranlari', JSON.stringify(karOranlari));
+  }
   
-  // Aktif Ürünler
   const aktifUrunler = await loadFromSupabase('aktifUrunler');
-  if (aktifUrunler) localStorage.setItem('aktifUrunler', JSON.stringify(aktifUrunler));
+  if (aktifUrunler) {
+    localStorage.setItem('aktifUrunler', JSON.stringify(aktifUrunler));
+  }
   
-  // USD Kur
   const usdKur = await loadFromSupabase('usdKur');
-  if (usdKur) localStorage.setItem('usdKur', usdKur.toString());
+  if (usdKur) {
+    localStorage.setItem('usdKur', usdKur.toString());
+  }
   
-  console.log('Supabase'den yükleme tamamlandı!');
+  console.log('✅ Veriler yüklendi!');
 }
 
-// Auto-save sistemi (2 saniye debounce)
+// Auto-save (2 saniye debounce)
 let saveTimeout;
 function autoSaveToSupabase() {
   clearTimeout(saveTimeout);
@@ -886,16 +931,40 @@ function autoSaveToSupabase() {
   }, 2000);
 }
 
-// localStorage'a her yazıldığında Supabase'e de kaydet
+// localStorage intercept
 const originalSetItem = localStorage.setItem;
 localStorage.setItem = function(key, value) {
   originalSetItem.apply(this, arguments);
-  
-  // Önemli veriler değiştiyse Supabase'e kaydet
   if (['fiyatlar_v2', 'projeler', 'karOranlari', 'aktifUrunler', 'usdKur'].includes(key)) {
     autoSaveToSupabase();
   }
 };
+
+// Sayfa yüklendiğinde
+window.addEventListener('DOMContentLoaded', async function() {
+  console.log('🚀 Uygulama başlatılıyor...');
+  
+  // Login butonuna event listener
+  const loginButton = document.getElementById('loginButton');
+  if (loginButton) {
+    loginButton.addEventListener('click', checkLogin);
+    loginButton.addEventListener('mouseover', function() {
+      this.style.transform = 'translateY(-2px)';
+    });
+    loginButton.addEventListener('mouseout', function() {
+      this.style.transform = 'translateY(0)';
+    });
+  }
+  
+  // Supabase'den yükle
+  await loadFromSupabaseAll();
+  
+  // Oturum kontrolü
+  const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+  if (isLoggedIn === 'true') {
+    showMainContent();
+  }
+});
 
 
 // === LOGO DATA FOR EXPORT ===
@@ -3851,67 +3920,5 @@ document.addEventListener("DOMContentLoaded",()=>{
 });
 </script>
 
-
-<script>
-// Giriş kontrolü
-
-// SHA-256 hash fonksiyonu
-async function sha256(message) {
-  const msgBuffer = new TextEncoder().encode(message);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  return hashHex;
-}
-
-const VALID_PASSWORD_HASH = "0352337fdecfe1078dbc9815ab93fa22c3d0fb06149fc120a9d9ec460e766873";
-
-// Sayfa yüklendiğinde oturum kontrolü
-window.addEventListener('DOMContentLoaded', function() {
-  const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-  if (isLoggedIn === 'true') {
-    showMainContent();
-  }
-});
-
-async function checkLogin() {
-  const password = document.getElementById('loginPassword').value;
-  const errorDiv = document.getElementById('loginError');
-  
-  // Şifreyi hash'le
-  const passwordHash = await sha256(password);
-  
-  if (passwordHash === VALID_PASSWORD_HASH) {
-    sessionStorage.setItem('isLoggedIn', 'true');
-    errorDiv.style.display = 'none';
-    showMainContent();
-  } else {
-    errorDiv.style.display = 'block';
-    document.getElementById('loginPassword').value = '';
-    document.getElementById('loginPassword').focus();
-  }
-}
-
-function showMainContent() {
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('mainContent').style.display = 'block';
-}
-
-// Enter tuşu ile giriş
-document.addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') {
-    const loginScreen = document.getElementById('loginScreen');
-    if (loginScreen && loginScreen.style.display !== 'none') {
-      checkLogin();
-    }
-  }
-});
-
-// Çıkış fonksiyonu
-function logout() {
-  sessionStorage.removeItem('isLoggedIn');
-  location.reload();
-}
-</script>
 </body>
 </html>
