@@ -1962,11 +1962,11 @@ function toggleUrunAktif(urunAd) {
   if (index > -1) {
     // Pasiften aktife al
     projeler[aktifProje].pasifUrunler.splice(index, 1);
-    showUyari(urunAd + ' aktif edildi!', 'success');
+    //showUyari(urunAd + ' aktif edildi!', 'success');
   } else {
     // Aktiften pasife al
     projeler[aktifProje].pasifUrunler.push(urunAd);
-    showUyari(urunAd + ' pasif edildi!', 'warning');
+    //showUyari(urunAd + ' pasif edildi!', 'warning');
   }
   
   // Tüm checkbox'ları güncelle (hem DDY hem Şube tablolarında)
