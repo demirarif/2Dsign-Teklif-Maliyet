@@ -1,0 +1,3917 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Teklifler & Projeler Yönetimi</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root {
+ --primary: #6366f1;
+ --primary-dark: #4f46e5;
+ --success: #10b981;
+ --warning: #f59e0b;
+ --danger: #ef4444;
+ --bg-main: #0f172a;
+ --bg-card: #1e293b;
+ --bg-hover: #334155;
+ --text-primary: #f1f5f9;
+ --text-secondary: #94a3b8;
+ --border: #334155;
+ --shadow: rgba(0,0,0,0.3);
+}
+
+*{box-sizing:border-box}
+body {
+ font-family: 'Segoe UI', system-ui, sans-serif;
+ background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+ color: var(--text-primary);
+ margin: 0;
+ padding: 30px;
+ min-height: 100vh;
+}
+
+nav {
+ display: flex;
+ justify-content: center;
+ gap: 15px;
+ margin-bottom: 25px;
+}
+
+nav button {
+ background: var(--bg-card);
+ color: var(--text-secondary);
+ border: 1px solid var(--border);
+ border-radius: 10px;
+ padding: 12px 22px;
+ font-weight: 600;
+ cursor: pointer;
+ transition: all 0.3s;
+}
+
+nav button:hover { background: var(--bg-hover); color: var(--text-primary); }
+nav button.aktif {
+ background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+ color: white;
+ box-shadow: 0 4px 10px rgba(99,102,241,0.3);
+}
+
+.card {
+ background: var(--bg-card);
+ padding: 25px;
+ border-radius: 16px;
+ box-shadow: 0 4px 6px var(--shadow);
+ margin-bottom: 20px;
+}
+
+h1, h2, h3 {
+ margin: 0 0 15px 0;
+ background: linear-gradient(135deg, #6366f1, #a78bfa);
+ -webkit-background-clip: text;
+ -webkit-text-fill-color: transparent;
+}
+
+.hidden { display:none; }
+input, select, button { font-family: inherit; }
+
+table {
+ width: 100%;
+ border-collapse: collapse;
+}
+thead {
+ background: linear-gradient(135deg,#334155,#475569);
+}
+th, td {
+ border-top: 1px solid var(--border);
+ text-align: center;
+ color: var(--text-primary);
+ height: 44px; 
+ vertical-align: middle;
+ padding: 8px 10px;
+}
+input[type="number"], input[type="text"] {
+ width: 100%;
+ max-width: 140px;
+ height: 32px; 
+ line-height: 32px; 
+ padding: 0 8px; 
+ vertical-align: middle; 
+ border-radius: 8px;
+ border: 1px solid var(--border);
+ background: var(--bg-main);
+ color: var(--text-primary);
+ text-align: center;
+}
+tfoot td {
+ background: var(--bg-main);
+ font-weight: 700;
+}
+.usd { color:#10b981; font-weight:600; }
+.tl { color:#ef4444; font-weight:600; }
+
+.kategori-header {
+ background: linear-gradient(135deg, var(--bg-hover), var(--bg-card));
+ padding: 15px 20px;
+ border-radius: 10px;
+ margin: 10px 0;
+ cursor: pointer;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ transition: all 0.3s;
+ border: 1px solid var(--border);
+}
+
+.kategori-header:hover {
+ background: linear-gradient(135deg, var(--bg-hover), var(--bg-hover));
+ transform: translateX(5px);
+}
+
+.kategori-header h3 {
+ margin: 0;
+ font-size: 18px;
+}
+
+.kategori-content {
+ padding: 10px 20px;
+ display: none;
+}
+
+.kategori-content.open {
+ display: block;
+}
+
+.alt-kategori-header {
+ background: var(--bg-card);
+ padding: 12px 15px;
+ border-radius: 8px;
+ margin: 8px 0;
+ cursor: pointer;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ border-left: 3px solid var(--primary);
+ transition: all 0.2s;
+}
+
+.alt-kategori-header:hover {
+ background: var(--bg-hover);
+ padding-left: 20px;
+}
+
+.alt-kategori-content {
+ padding: 10px 15px;
+ display: none;
+}
+
+.alt-kategori-content.open {
+ display: block;
+}
+
+.urun-item {
+ padding: 10px 15px;
+ background: var(--bg-main);
+ margin: 6px 0;
+ border-radius: 6px;
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ transition: all 0.2s;
+ border-left: 2px solid transparent;
+}
+
+.urun-item:hover {
+ background: var(--bg-hover);
+ border-left-color: var(--success);
+}
+
+.kar-oran-badge {
+ background: var(--success);
+ color: white;
+ padding: 4px 12px;
+ border-radius: 20px;
+ font-size: 12px;
+ font-weight: 600;
+ margin-left: 10px;
+}
+
+.chevron {
+ transition: transform 0.3s;
+ font-size: 20px;
+ color: var(--text-secondary);
+}
+
+.chevron.open {
+ transform: rotate(180deg);
+}
+
+/* Aktif/Pasif Buton Stilleri */
+.aktif-pasif-btn {
+  transition: all 0.3s ease;
+}
+
+.aktif-pasif-btn.aktif:hover {
+  background: #059669 !important;
+  transform: scale(1.05);
+}
+
+.aktif-pasif-btn.pasif {
+  background: #64748b !important;
+}
+
+.aktif-pasif-btn.pasif:hover {
+  background: #475569 !important;
+  transform: scale(1.05);
+}
+
+/* Toggle Switch Stilleri */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  margin: 0;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #64748b;
+  transition: 0.3s;
+  border-radius: 24px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+  background-color: var(--success);
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(20px);
+}
+
+.toggle-slider:hover {
+  opacity: 0.9;
+}
+</style>
+
+<!-- Supabase Client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+<!-- GİRİŞ EKRANI -->
+<div id="loginScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);display:flex;align-items:center;justify-content:center;z-index:99999;">
+  <div style="background:#1e293b;padding:50px;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.6);width:420px;max-width:90%;border:1px solid rgba(99,102,241,0.3);">
+    
+    <h1 style="text-align:center;margin:0 0 50px 0;font-size:32px;font-weight:700;background:linear-gradient(135deg,#6366f1,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+      Teklif & Proje Yönetimi
+    </h1>
+    
+    <div style="margin-bottom:28px;">
+      <label style="display:block;margin-bottom:10px;color:#94a3b8;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Şifre</label>
+      <input type="password" id="loginPassword" autocomplete="current-password" style="width:100%;box-sizing:border-box;padding:16px;border-radius:12px;border:2px solid #334155;background:#0f172a;color:#f1f5f9;font-size:16px;outline:none;transition:border-color 0.3s;" onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='#334155'">
+    </div>
+    
+    <div id="loginError" style="display:none;background:rgba(239,68,68,0.1);border:1px solid #ef4444;color:#fca5a5;padding:14px;border-radius:10px;margin-bottom:24px;font-size:14px;text-align:center;">
+      ⚠️ Hatalı şifre!
+    </div>
+    
+    <button onclick="checkLogin()" style="width:100%;box-sizing:border-box;background:linear-gradient(135deg,#6366f1,#4f46e5);color:white;border:none;border-radius:12px;padding:18px;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 20px rgba(99,102,241,0.4);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+      GİRİŞ YAP
+    </button>
+    
+  </div>
+</div>
+
+<!-- SheetJS Library for Excel Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<!-- jsPDF Library for PDF Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+<!-- Docx Library for Word Export -->
+<script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+
+<div id="mainContent" style="display:none;">
+<nav>
+  <button id="btnTeklif" onclick="switchSection('teklif')" style="font-size:16px;padding:12px 24px;">Teklifler</button>
+  <button id="btnProje" class="aktif" onclick="switchSection('proje')" style="font-size:16px;padding:12px 24px;">Projeler</button>
+  <button onclick="openKisayollarModal()" style="background:var(--bg-hover);margin-left:auto;font-size:13px;padding:8px 16px;" title="Klavye kısayollarını görüntüle ve düzenle">Kısayollar</button>
+</nav>
+
+<!-- === TEKLİFLER === -->
+<div id="teklifSection" class="hidden">
+ 
+<!-- DASHBOARD CARD -->
+
+<div class="card">
+ <h1>Fiyat Yönetim Sistemi</h1>
+ <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+ <input type="text" id="searchInput" placeholder="Ürün ara..." style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-main);color:var(--text-primary);">
+ <button onclick="openKategoriYonetimModal()" style="background:var(--warning);color:white;border:none;border-radius:8px;padding:10px 18px;cursor:pointer;">Kategori Ekle/Sil</button>
+ <button onclick="openModal()" style="background:var(--primary);color:white;border:none;border-radius:8px;padding:10px 18px;cursor:pointer;">Ürün Ekle/Düzenle</button>
+ </div>
+ <div style="padding:10px;background:rgba(59,130,246,0.1);border-left:3px solid var(--primary);border-radius:6px;margin-bottom:20px;font-size:13px;color:var(--text-secondary);">
+<strong>Teklifler:</strong> Burada eklenen kategoriler ve ürünler<strong>tüm projelerde</strong> kullanılabilir (global).
+ </div>
+ 
+ <div id="teklifKategoriler"></div>
+ </div>
+</div>
+
+<!-- === PROJELER === -->
+<div id="projeSection">
+ <div class="card" id="topbar">
+ <h1>Proje Maliyet ve Satış Analizi</h1>
+ <div style="display:flex;gap:10px;align-items:center;">
+ <input id="arama" type="text" placeholder="Ürün ara..." oninput="filtrele()" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-main);color:var(--text-primary);">
+ <button onclick="temizleArama()" style="background:var(--primary);color:white;border:none;border-radius:8px;padding:10px 15px;">Temizle</button>
+ </div>
+ </div>
+
+ <div id="projeler" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;"></div>
+ <h2 id="projeBaslik" style="display:flex;align-items:center;gap:10px;">Proje: Emek</h2>
+
+ <div style="margin-bottom:10px;display:flex;gap:10px;flex-wrap:wrap;">
+ <button onclick="openKarOranModal()" 
+ style="background:var(--success);color:white;border:none;
+ border-radius:8px;padding:10px 18px;cursor:pointer;">
+ Kar Oranları
+ </button>
+ <button onclick="openProjectModal()" 
+ style="background:var(--primary);color:white;border:none;
+ border-radius:8px;padding:10px 18px;cursor:pointer;">
+ Bu Projeye Özel Ürün Ekle
+ </button>
+ </div>
+ <div style="padding:10px;background:rgba(16,185,129,0.1);border-left:3px solid var(--success);border-radius:6px;margin-bottom:15px;font-size:13px;color:var(--text-secondary);">
+<strong>Projeler:</strong> "Özel Ürün" butonu ile eklenen ürünler<strong>sadece bu projede</strong> görünür. Diğer projeler etkilenmez.
+ </div>
+
+ <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;">
+ <div style="flex:1;min-width:340px;background:var(--bg-card);border-radius:12px;overflow:hidden;">
+ <table id="maliyetTablo">
+ <thead>
+ <tr>
+   <th colspan="5" style="text-align:left;padding-left:12px;">DDY Maliyet</th>
+   <th style="padding:6px;">
+     <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;">
+       <button onclick="exportAllToExcel('maliyet')" 
+               style="background:var(--success);color:white;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:10px;font-weight:600;">
+         Tümünü Excel
+       </button>
+       <button onclick="exportAllToWord('maliyet')" 
+               style="background:#2563eb;color:white;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:10px;font-weight:600;">
+         Tümünü Word
+       </button>
+       <button onclick="exportAllToPDF('maliyet')" 
+               style="background:#ef4444;color:white;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:10px;font-weight:600;">
+         Tümünü PDF
+       </button>
+     </div>
+   </th>
+ </tr>
+ <tr><th>Ürün</th><th>Birim</th><th>KDV Hariç</th><th>KDV</th><th>KDV Dahil</th><th>Para</th></tr>
+ </thead>
+ <tbody></tbody>
+ <tfoot>
+ <tr><td colspan="6">Toplamlar (DDY)</td></tr>
+ <tr><td colspan="2">TL KDV Hariç</td><td id="DDY_TL_H">0</td><td colspan="3"></td></tr>
+ <tr><td colspan="2">TL KDV</td><td id="DDY_TL_KDV">0</td><td colspan="3"></td></tr>
+ <tr><td colspan="2">TL KDV Dahil</td><td id="DDY_TL_D">0</td><td colspan="3"></td></tr>
+ <tr><td colspan="2">USD KDV Hariç</td><td id="DDY_USD_H">0</td><td colspan="3"></td></tr>
+ <tr><td colspan="2">USD KDV</td><td id="DDY_USD_KDV">0</td><td colspan="3"></td></tr>
+ <tr><td colspan="2">USD KDV Dahil</td><td id="DDY_USD_D">0</td><td colspan="3"></td></tr>
+ </tfoot>
+ </table>
+ </div>
+
+ <div style="flex:1;min-width:340px;background:var(--bg-card);border-radius:12px;overflow:hidden;">
+ <table id="satisTablo">
+ <thead>
+ <tr>
+   <th colspan="5" style="text-align:left;padding-left:12px;">Şube Maliyet</th>
+   <th style="padding:6px;">
+     <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;">
+       <button onclick="exportAllToExcel('satis')" 
+               style="background:var(--primary);color:white;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:10px;font-weight:600;">
+         Tümünü Excel
+       </button>
+       <button onclick="exportAllToWord('satis')" 
+               style="background:#2563eb;color:white;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:10px;font-weight:600;">
+         Tümünü Word
+       </button>
+       <button onclick="exportAllToPDF('satis')" 
+               style="background:#ef4444;color:white;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:10px;font-weight:600;">
+         Tümünü PDF
+       </button>
+     </div>
+   </th>
+ </tr>
+ <tr><th>Ürün</th><th>Birim</th><th>KDV Hariç</th><th>KDV</th><th>KDV Dahil</th><th>Para</th></tr>
+ </thead>
+ <tbody></tbody>
+ <tfoot>
+ <tr><td colspan="6">Toplamlar (Şube)</td></tr>
+ <tr><td colspan="2">TL KDV Hariç</td><td id="SUBE_TL_H">0</td><td colspan="3"></td></tr>
+ <tr><td colspan="2">TL KDV</td><td id="SUBE_TL_KDV">0</td><td colspan="3"></td></tr>
+ <tr><td colspan="2">TL KDV Dahil</td><td id="SUBE_TL_D">0</td><td colspan="3"></td></tr>
+ <tr><td colspan="2">USD KDV Hariç</td><td id="SUBE_USD_H">0</td><td colspan="3"></td></tr>
+ <tr><td colspan="2">USD KDV</td><td id="SUBE_USD_KDV">0</td><td colspan="3"></td></tr>
+ <tr><td colspan="2">USD KDV Dahil</td><td id="SUBE_USD_D">0</td><td colspan="3"></td></tr>
+ </tfoot>
+ </table>
+ </div>
+ </div>
+</div>
+
+<!-- === ÜRÜN MODAL === -->
+<div id="productModal" class="hidden" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:1000;">
+ <div style="background:var(--bg-card);padding:30px;border-radius:14px;width:90%;max-width:850px;max-height:90vh;overflow-y:auto;">
+    <!-- Header with navigation -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
+      <div style="flex:1;min-width:200px;max-width:100%;">
+        <h2 id="modalTitle" style="margin:0 0 8px 0;">Yeni Ürün Ekle</h2>
+        <div id="currentProductName" style="font-size:15px;color:var(--text-primary);font-weight:500;display:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;background:rgba(59,130,246,0.1);padding:5px 10px;border-radius:4px;"></div>
+      </div>
+      <div id="productNavigation" style="display:none;align-items:center;gap:10px;flex-shrink:0;">
+        <button onclick="navigateProduct(-1)" style="background:var(--bg-hover);border:1px solid var(--border);color:white;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:14px;" title="Önceki ürün (Ctrl+Sol Ok)">◀</button>
+        <span id="productCounter" style="font-size:13px;color:var(--text-secondary);min-width:60px;text-align:center;">1 / 10</span>
+        <button onclick="navigateProduct(1)" style="background:var(--bg-hover);border:1px solid var(--border);color:white;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:14px;" title="Sonraki ürün (Ctrl+Sağ Ok)">▶</button>
+      </div>
+    </div>
+    
+    <div id="modalInfoBox" style="padding:10px;background:rgba(59,130,246,0.1);border-left:3px solid var(--primary);border-radius:6px;margin-bottom:15px;font-size:12px;color:var(--text-secondary);"></div>
+    
+    <div style="margin-bottom:10px;">
+      <label>Kategori:</label><br>
+      <select id="productCategory" onchange="updateAltKategori()" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--bg-main);color:white;box-sizing:border-box;">
+        <option value="">Seçiniz</option>
+      </select>
+    </div>
+
+    <div id="altKategoriDiv" style="margin-bottom:10px;display:none;">
+      <label>Alt Kategori:</label><br>
+      <select id="productAltCategory" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--bg-main);color:white;box-sizing:border-box;">
+        <option value="">Seçiniz</option>
+      </select>
+    </div>
+    
+    <div style="margin-bottom:10px;">
+      <label>Ürün Adı:</label><br>
+      <input type="text" id="productName" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--bg-main);color:white;box-sizing:border-box;">
+    </div>
+
+    <div style="margin-bottom:10px;">
+      <label>Marka (opsiyonel):</label><br>
+      <input type="text" id="productBrand" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--bg-main);color:white;box-sizing:border-box;">
+    </div>
+    
+    <div style="margin-bottom:10px;">
+      <label>Para Birimi:</label><br>
+      <select id="productCurrency" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--bg-main);color:white;box-sizing:border-box;">
+        <option value="TL">TL</option>
+        <option value="USD">USD</option>
+      </select>
+    </div>
+    
+    <div style="margin-bottom:10px;">
+ <label>Teklifler:</label>
+ <div id="offersContainer"></div>
+ <button onclick="addOfferRow()" style="background:var(--primary);color:white;border:none;border-radius:8px;padding:6px 10px;margin-top:8px;cursor:pointer;">+ Teklif Ekle</button>
+ </div>
+ 
+ <div style="display:flex;gap:10px;margin-top:20px;">
+ <button onclick="saveProduct()" style="flex:1;background:var(--success);border:none;border-radius:8px;color:white;padding:10px;cursor:pointer;">Kaydet</button>
+ <button onclick="closeModal()" style="flex:1;background:var(--danger);border:none;border-radius:8px;color:white;padding:10px;cursor:pointer;">İptal</button>
+ </div>
+ </div>
+</div>
+
+<!-- === YENI PROJE MODAL === -->
+<div id="yeniProjeModal" class="hidden" onclick="if(event.target.id==='yeniProjeModal')closeYeniProjeModal()" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:1000;">
+ <div style="background:var(--bg-card);padding:30px;border-radius:14px;width:90%;max-width:400px;">
+ <h2 style="margin-bottom:20px;">Yeni Proje Oluştur</h2>
+ 
+ <div style="margin-bottom:20px;">
+ <label>Proje Adı:</label><br>
+ <input type="text" id="yeniProjeAdi" placeholder="Proje adını girin..." 
+ onkeypress="if(event.key==='Enter')kaydetYeniProje()"
+ style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--bg-main);color:white;">
+ </div>
+ 
+ <div style="display:flex;gap:10px;">
+ <button onclick="kaydetYeniProje()" style="flex:1;background:var(--success);border:none;border-radius:8px;color:white;padding:10px;cursor:pointer;">Oluştur</button>
+ <button onclick="closeYeniProjeModal()" style="flex:1;background:var(--danger);border:none;border-radius:8px;color:white;padding:10px;cursor:pointer;">İptal</button>
+ </div>
+ </div>
+</div>
+
+<!-- === ONAY MODAL === -->
+<div id="onayModal" class="hidden" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:1001;">
+ <div style="background:var(--bg-card);padding:30px;border-radius:14px;width:90%;max-width:400px;">
+ <h2 style="margin-bottom:20px;color:var(--danger);">Onay</h2>
+ 
+ <p id="onayMesaj" style="margin-bottom:20px;color:var(--text-primary);"></p>
+ 
+ <div style="display:flex;gap:10px;">
+ <button id="onayEvet" style="flex:1;background:var(--danger);border:none;border-radius:8px;color:white;padding:10px;cursor:pointer;">Evet</button>
+ <button onclick="closeOnayModal()" style="flex:1;background:var(--bg-hover);border:none;border-radius:8px;color:white;padding:10px;cursor:pointer;">Hayır</button>
+ </div>
+ </div>
+</div>
+
+<!-- === UYARI MODAL === -->
+<div id="uyariModal" class="hidden" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:1001;">
+ <div style="background:var(--bg-card);padding:30px;border-radius:14px;width:90%;max-width:400px;">
+ <h2 style="margin-bottom:20px;">Bilgi</h2>
+ 
+ <p id="uyariMesaj" style="margin-bottom:20px;color:var(--text-primary);"></p>
+ 
+ <div style="display:flex;gap:10px;">
+ <button onclick="closeUyariModal()" style="flex:1;background:var(--primary);border:none;border-radius:8px;color:white;padding:10px;cursor:pointer;">Tamam</button>
+ </div>
+ </div>
+</div>
+
+<!-- === KATEGORİ YÖNETİMİ MODAL === -->
+<div id="kategoriYonetimModal" class="hidden" onclick="if(event.target.id==='kategoriYonetimModal')closeKategoriYonetimModal()" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:1000;">
+ <div style="background:var(--bg-card);padding:30px;border-radius:14px;width:90%;max-width:700px;max-height:85vh;overflow-y:auto;">
+ <h2 style="margin-bottom:20px;">Kategori Yönetimi</h2>
+ 
+ <!-- Yeni Kategori Ekleme -->
+ <div style="background:var(--bg-main);padding:20px;border-radius:10px;margin-bottom:20px;">
+ <h3 style="margin-bottom:15px;font-size:16px;">Yeni Kategori Ekle</h3>
+ <div style="display:flex;gap:10px;margin-bottom:10px;">
+ <input type="text" id="yeniKategoriAdi" placeholder="Kategori adı (örn: Cam İşleri)" 
+ style="flex:1;padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--bg-card);color:white;">
+ <button onclick="yeniKategoriEkle()" 
+ style="background:var(--success);color:white;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;white-space:nowrap;">
+ Kategori Ekle
+ </button>
+ </div>
+ </div>
+ 
+ <!-- Yeni Alt Kategori Ekleme -->
+ <div style="background:var(--bg-main);padding:20px;border-radius:10px;margin-bottom:20px;">
+ <h3 style="margin-bottom:15px;font-size:16px;">Yeni Alt Kategori Ekle</h3>
+ <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
+ <select id="anaKategoriSec" style="flex:1;min-width:200px;padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--bg-card);color:white;">
+ <option value="">Ana Kategori Seçin</option>
+ </select>
+ <input type="text" id="yeniAltKategoriAdi" placeholder="Alt kategori adı" 
+ style="flex:1;min-width:200px;padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--bg-card);color:white;">
+ <button onclick="yeniAltKategoriEkle()" 
+ style="background:var(--success);color:white;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;white-space:nowrap;">
+ Alt Kategori Ekle
+ </button>
+ </div>
+ </div>
+ 
+ <!-- Mevcut Kategoriler Listesi -->
+ <div style="background:var(--bg-main);padding:20px;border-radius:10px;margin-bottom:20px;">
+ <h3 style="margin-bottom:15px;font-size:16px;">Mevcut Kategoriler</h3>
+ <div id="kategoriListesi" style="max-height:300px;overflow-y:auto;"></div>
+ </div>
+ 
+ <div style="display:flex;gap:10px;">
+ <button onclick="closeKategoriYonetimModal()" 
+ style="flex:1;background:var(--danger);border:none;border-radius:8px;color:white;padding:12px;cursor:pointer;">
+ Kapat
+ </button>
+ </div>
+ </div>
+</div>
+
+<!-- === KISAYOLLAR MODAL === -->
+<div id="kisayollarModal" class="hidden" onclick="if(event.target.id==='kisayollarModal')closeKisayollarModal()" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:1000;">
+  <div style="background:var(--bg-card);padding:30px;border-radius:14px;width:90%;max-width:800px;max-height:85vh;overflow-y:auto;">
+    <h2 style="margin-bottom:20px;">Klavye Kısayolları Ayarları</h2>
+    
+    <div style="display:grid;gap:15px;" id="kisayollarContainer">
+      <!-- Navigasyon -->
+      <div>
+        <h3 style="color:var(--primary);margin-bottom:10px;font-size:15px;border-bottom:2px solid var(--primary);padding-bottom:5px;">Navigasyon</h3>
+        <div style="display:grid;gap:6px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-main);border-radius:6px;">
+            <span style="font-size:14px;">Teklifler sayfası</span>
+            <input type="text" value="F1" data-action="data-action="gotoTeklifler" class="shortcut-input" style="KEYdata-action="gotoTeklifler" class="shortcut-input" style="" class="shortcut-input" style="width:100px;padding:6px;background:var(--bg-hover);border:1px solid var(--border);border-radius:4px;text-align:center;font-family:monospace;font-size:13px;color:white;">
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-main);border-radius:6px;">
+            <span style="font-size:14px;">Projeler sayfası</span>
+            <input type="text" value="F2" data-action="data-action="gotoProjeler" class="shortcut-input" style="KEYdata-action="gotoProjeler" class="shortcut-input" style="" class="shortcut-input" style="width:100px;padding:6px;background:var(--bg-hover);border:1px solid var(--border);border-radius:4px;text-align:center;font-family:monospace;font-size:13px;color:white;">
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-main);border-radius:6px;">
+            <span style="font-size:14px;">Arama kutusuna odaklan</span>
+            <input type="text" value="Ctrl+F" data-action="data-action="focusSearch" class="shortcut-input" style="KEYdata-action="focusSearch" class="shortcut-input" style="" class="shortcut-input" style="width:100px;padding:6px;background:var(--bg-hover);border:1px solid var(--border);border-radius:4px;text-align:center;font-family:monospace;font-size:13px;color:white;">
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-main);border-radius:6px;">
+            <span style="font-size:14px;">Aramayı temizle</span>
+            <input type="text" value="Ctrl+Shift+F" data-action="data-action="clearSearch" class="shortcut-input" style="KEYdata-action="clearSearch" class="shortcut-input" style="" class="shortcut-input" style="width:100px;padding:6px;background:var(--bg-hover);border:1px solid var(--border);border-radius:4px;text-align:center;font-family:monospace;font-size:13px;color:white;">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Ürün İşlemleri -->
+      <div>
+        <h3 style="color:var(--success);margin-bottom:10px;font-size:15px;border-bottom:2px solid var(--success);padding-bottom:5px;">Ürün İşlemleri</h3>
+        <div style="display:grid;gap:6px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-main);border-radius:6px;">
+            <span style="font-size:14px;">Yeni Ürün Ekle (Global)</span>
+            <input type="text" value="Ctrl+U" data-action="data-action="newProduct" class="shortcut-input" style="KEYdata-action="newProduct" class="shortcut-input" style="" class="shortcut-input" style="width:100px;padding:6px;background:var(--bg-hover);border:1px solid var(--border);border-radius:4px;text-align:center;font-family:monospace;font-size:13px;color:white;">
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-main);border-radius:6px;">
+            <span style="font-size:14px;">Kategori Yönetimi</span>
+            <input type="text" value="Ctrl+K" data-action="data-action="categoryManagement" class="shortcut-input" style="KEYdata-action="categoryManagement" class="shortcut-input" style="" class="shortcut-input" style="width:100px;padding:6px;background:var(--bg-hover);border:1px solid var(--border);border-radius:4px;text-align:center;font-family:monospace;font-size:13px;color:white;">
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-main);border-radius:6px;">
+            <span style="font-size:14px;">Bu Projeye Özel Ürün</span>
+            <input type="text" value="Ctrl+P" data-action="data-action="projectProduct" class="shortcut-input" style="KEYdata-action="projectProduct" class="shortcut-input" style="" class="shortcut-input" style="width:100px;padding:6px;background:var(--bg-hover);border:1px solid var(--border);border-radius:4px;text-align:center;font-family:monospace;font-size:13px;color:white;">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Proje İşlemleri -->
+      <div>
+        <h3 style="color:var(--warning);margin-bottom:10px;font-size:15px;border-bottom:2px solid var(--warning);padding-bottom:5px;">Proje İşlemleri</h3>
+        <div style="display:grid;gap:6px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-main);border-radius:6px;">
+            <span style="font-size:14px;">Yeni Proje Oluştur</span>
+            <input type="text" value="Ctrl+N" data-action="data-action="newProject" class="shortcut-input" style="KEYdata-action="newProject" class="shortcut-input" style="" class="shortcut-input" style="width:100px;padding:6px;background:var(--bg-hover);border:1px solid var(--border);border-radius:4px;text-align:center;font-family:monospace;font-size:13px;color:white;">
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-main);border-radius:6px;">
+            <span style="font-size:14px;">Kar Oranları</span>
+            <input type="text" value="Ctrl+R" data-action="data-action="profitRates" class="shortcut-input" style="KEYdata-action="profitRates" class="shortcut-input" style="" class="shortcut-input" style="width:100px;padding:6px;background:var(--bg-hover);border:1px solid var(--border);border-radius:4px;text-align:center;font-family:monospace;font-size:13px;color:white;">
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-main);border-radius:6px;">
+            <span style="font-size:14px;">Projeyi Kaydet (feedback)</span>
+            <input type="text" value="Ctrl+S" data-action="data-action="saveProject" class="shortcut-input" style="KEYdata-action="saveProject" class="shortcut-input" style="" class="shortcut-input" style="width:100px;padding:6px;background:var(--bg-hover);border:1px solid var(--border);border-radius:4px;text-align:center;font-family:monospace;font-size:13px;color:white;">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Modal İşlemleri -->
+      <div>
+        <h3 style="color:var(--danger);margin-bottom:10px;font-size:15px;border-bottom:2px solid var(--danger);padding-bottom:5px;">Modal İşlemleri</h3>
+        <div style="display:grid;gap:6px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-main);border-radius:6px;">
+            <span style="font-size:14px;">Kaydet / Onay</span>
+            <input type="text" value="Enter" data-action="data-action="confirm" class="shortcut-input" style="KEYdata-action="confirm" class="shortcut-input" style="" class="shortcut-input" style="width:100px;padding:6px;background:var(--bg-hover);border:1px solid var(--border);border-radius:4px;text-align:center;font-family:monospace;font-size:13px;color:white;">
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-main);border-radius:6px;">
+            <span style="font-size:14px;">İptal / Kapat</span>
+            <input type="text" value="Esc" data-action="data-action="cancel" class="shortcut-input" style="KEYdata-action="cancel" class="shortcut-input" style="" class="shortcut-input" style="width:100px;padding:6px;background:var(--bg-hover);border:1px solid var(--border);border-radius:4px;text-align:center;font-family:monospace;font-size:13px;color:white;">
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-main);border-radius:6px;">
+            <span style="font-size:14px;">Sonraki alana geç</span>
+            <input type="text" value="Tab" data-action="data-action="nextField" class="shortcut-input" style="KEYdata-action="nextField" class="shortcut-input" style="" class="shortcut-input" style="width:100px;padding:6px;background:var(--bg-hover);border:1px solid var(--border);border-radius:4px;text-align:center;font-family:monospace;font-size:13px;color:white;">
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-main);border-radius:6px;">
+            <span style="font-size:14px;">Önceki alana geç</span>
+            <input type="text" value="Shift+Tab" data-action="data-action="prevField" class="shortcut-input" style="KEYdata-action="prevField" class="shortcut-input" style="" class="shortcut-input" style="width:100px;padding:6px;background:var(--bg-hover);border:1px solid var(--border);border-radius:4px;text-align:center;font-family:monospace;font-size:13px;color:white;">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Ürün Düzenleme -->
+      <div>
+        <h3 style="color:#8b5cf6;margin-bottom:10px;font-size:15px;border-bottom:2px solid #8b5cf6;padding-bottom:5px;">Ürün Düzenleme (Modal İçinde)</h3>
+        <div style="display:grid;gap:6px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-main);border-radius:6px;">
+            <span style="font-size:14px;">Önceki ürün</span>
+            <input type="text" value="Ctrl+Left" data-action="data-action="prevProduct" class="shortcut-input" style="KEYdata-action="prevProduct" class="shortcut-input" style="" class="shortcut-input" style="width:100px;padding:6px;background:var(--bg-hover);border:1px solid var(--border);border-radius:4px;text-align:center;font-family:monospace;font-size:13px;color:white;">
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-main);border-radius:6px;">
+            <span style="font-size:14px;">Sonraki ürün</span>
+            <input type="text" value="Ctrl+Right" data-action="data-action="nextProduct" class="shortcut-input" style="KEYdata-action="nextProduct" class="shortcut-input" style="" class="shortcut-input" style="width:100px;padding:6px;background:var(--bg-hover);border:1px solid var(--border);border-radius:4px;text-align:center;font-family:monospace;font-size:13px;color:white;">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Yardım -->
+      <div>
+        <h3 style="color:var(--text-secondary);margin-bottom:10px;font-size:15px;border-bottom:2px solid var(--text-secondary);padding-bottom:5px;">Yardım</h3>
+        <div style="display:grid;gap:6px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg-main);border-radius:6px;">
+            <span style="font-size:14px;">Kısayollar penceresini aç</span>
+            <input type="text" value="F12" data-action="data-action="openShortcuts" class="shortcut-input" style="KEYdata-action="openShortcuts" class="shortcut-input" style="" class="shortcut-input" style="width:100px;padding:6px;background:var(--bg-hover);border:1px solid var(--border);border-radius:4px;text-align:center;font-family:monospace;font-size:13px;color:white;">
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div style="margin-top:20px;padding:15px;background:rgba(59,130,246,0.1);border-left:3px solid var(--primary);border-radius:6px;font-size:13px;color:var(--text-secondary);">
+      <strong>Nasıl Kullanılır:</strong> Kısayol alanına tıklayın ve yeni tuş kombinasyonunu basın (örn: Ctrl+A veya F5). Değişiklikleri kaydetmeyi unutmayın!
+    </div>
+    
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button onclick="saveShortcuts()" 
+              style="flex:1;background:var(--success);border:none;border-radius:8px;color:white;padding:12px;cursor:pointer;font-size:15px;">
+        Kaydet
+      </button>
+      <button onclick="resetShortcuts()" 
+              style="flex:1;background:var(--warning);border:none;border-radius:8px;color:white;padding:12px;cursor:pointer;font-size:15px;">
+        Varsayılana Dön
+      </button>
+      <button onclick="closeKisayollarModal()" 
+              style="flex:1;background:var(--danger);border:none;border-radius:8px;color:white;padding:12px;cursor:pointer;font-size:15px;">
+        İptal
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- === KAR ORANI MODAL === -->
+<div id="karOranModal" class="hidden" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:1000;">
+ <div style="background:var(--bg-card);padding:30px;border-radius:14px;width:90%;max-width:600px;max-height:90vh;overflow-y:auto;">
+ <h2 style="margin-bottom:20px;">Kategori Kar Oranları</h2>
+ <p style="color:var(--text-secondary);margin-bottom:20px;font-size:14px;">Her kategori için kar oranını belirleyin. Şube maliyet fiyatı = En yüksek teklif × (1 + Kar oranı)</p>
+ 
+ <div id="karOranContainer"></div>
+ 
+ <div style="display:flex;gap:10px;margin-top:20px;">
+ <button onclick="saveKarOranlari()" style="flex:1;background:var(--success);border:none;border-radius:8px;color:white;padding:10px;cursor:pointer;">Kaydet</button>
+ <button onclick="closeKarOranModal()" style="flex:1;background:var(--danger);border:none;border-radius:8px;color:white;padding:10px;cursor:pointer;">İptal</button>
+ </div>
+ </div>
+</div>
+
+</div><!-- mainContent -->
+
+<script>
+
+
+// Supabase Configuration
+const SUPABASE_URL = 'https://giluxnjfelgxsusipurj.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdpbHV4bmpmZWxneHN1c2lwdXJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4ODg2NTEsImV4cCI6MjA3ODQ2NDY1MX0.WWvHIaA2tM3SgimrSl5IRzhwCII4MSWb8gr6DCf1Sm4';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Supabase'e veri kaydetme
+async function saveToSupabase(dataKey, dataValue) {
+  try {
+    const { data, error } = await supabase
+      .from('app_data')
+      .upsert({
+        user_id: 'default',
+        data_key: dataKey,
+        data_value: dataValue,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id,data_key'
+      });
+    
+    if (error) {
+      console.error('Supabase kaydetme hatası:', error);
+      return false;
+    }
+    console.log('Supabase'e kaydedildi:', dataKey);
+    return true;
+  } catch (err) {
+    console.error('Supabase bağlantı hatası:', err);
+    return false;
+  }
+}
+
+// Supabase'den veri okuma
+async function loadFromSupabase(dataKey) {
+  try {
+    const { data, error } = await supabase
+      .from('app_data')
+      .select('data_value')
+      .eq('user_id', 'default')
+      .eq('data_key', dataKey)
+      .single();
+    
+    if (error) {
+      if (error.code === 'PGRST116') {
+        console.log('Veri bulunamadı:', dataKey);
+        return null;
+      }
+      console.error('Supabase okuma hatası:', error);
+      return null;
+    }
+    
+    console.log('Supabase'den yüklendi:', dataKey);
+    return data.data_value;
+  } catch (err) {
+    console.error('Supabase bağlantı hatası:', err);
+    return null;
+  }
+}
+
+// Tüm verileri Supabase'e senkronize et
+async function syncToSupabase() {
+  console.log('Supabase senkronizasyonu başlıyor...');
+  
+  // Products
+  const products = JSON.parse(localStorage.getItem('fiyatlar_v2') || '[]');
+  await saveToSupabase('products', products);
+  
+  // Projeler
+  const projeler = JSON.parse(localStorage.getItem('projeler') || '{}');
+  await saveToSupabase('projeler', projeler);
+  
+  // Kar Oranları
+  const karOranlari = JSON.parse(localStorage.getItem('karOranlari') || '{}');
+  await saveToSupabase('karOranlari', karOranlari);
+  
+  // Aktif Ürünler
+  const aktifUrunler = JSON.parse(localStorage.getItem('aktifUrunler') || '{}');
+  await saveToSupabase('aktifUrunler', aktifUrunler);
+  
+  // USD Kur
+  const usdKur = localStorage.getItem('usdKur') || '34.50';
+  await saveToSupabase('usdKur', parseFloat(usdKur));
+  
+  console.log('Supabase senkronizasyonu tamamlandı!');
+}
+
+// Supabase'den tüm verileri yükle
+async function loadFromSupabaseAll() {
+  console.log('Supabase'den veriler yükleniyor...');
+  
+  // Products
+  const products = await loadFromSupabase('products');
+  if (products) localStorage.setItem('fiyatlar_v2', JSON.stringify(products));
+  
+  // Projeler
+  const projeler = await loadFromSupabase('projeler');
+  if (projeler) localStorage.setItem('projeler', JSON.stringify(projeler));
+  
+  // Kar Oranları
+  const karOranlari = await loadFromSupabase('karOranlari');
+  if (karOranlari) localStorage.setItem('karOranlari', JSON.stringify(karOranlari));
+  
+  // Aktif Ürünler
+  const aktifUrunler = await loadFromSupabase('aktifUrunler');
+  if (aktifUrunler) localStorage.setItem('aktifUrunler', JSON.stringify(aktifUrunler));
+  
+  // USD Kur
+  const usdKur = await loadFromSupabase('usdKur');
+  if (usdKur) localStorage.setItem('usdKur', usdKur.toString());
+  
+  console.log('Supabase'den yükleme tamamlandı!');
+}
+
+// Auto-save sistemi (2 saniye debounce)
+let saveTimeout;
+function autoSaveToSupabase() {
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    syncToSupabase();
+  }, 2000);
+}
+
+// localStorage'a her yazıldığında Supabase'e de kaydet
+const originalSetItem = localStorage.setItem;
+localStorage.setItem = function(key, value) {
+  originalSetItem.apply(this, arguments);
+  
+  // Önemli veriler değiştiyse Supabase'e kaydet
+  if (['fiyatlar_v2', 'projeler', 'karOranlari', 'aktifUrunler', 'usdKur'].includes(key)) {
+    autoSaveToSupabase();
+  }
+};
+
+
+// === LOGO DATA FOR EXPORT ===
+const DDY_LOGO_BASE64 = "data:image/png;base64,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";
+const ARABICA_LOGO_BASE64 = "data:image/png;base64,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";
+// ===========================
+
+// Kategorileri localStorage'dan yükle veya varsayılanları kullan
+let KATEGORILER = JSON.parse(localStorage.getItem("kategoriler") || "null") || {
+ "Mobilya": {
+ altlar: ["Masalar", "Banko Uygulama", "Mutfak Granit Tezgah", "Sedir Oturma Grupları", "Kütüphane", "Kapı", "Ahşap Ürün ve Diğer Üniteler", "Döşeme Grubu"],
+ urunler: {
+ "Masalar": [
+ "50X50 KESTANE MASİF MASA (AYAK: 12 KG 3LÜ DÖKÜM ASLAN AYAK)",
+ "50x50 COMPACT IZGARA MASA( PROFİL AYAK)",
+ "R:50CM KESTANE MASİF MASA (AYAK: 12 KG 3LÜ DÖKÜM ASLAN AYAK)",
+ "50X50 DIŞ MEKAN IZGARA MASA (AYAK: 12 KG 3LÜ DÖKÜM ASLAN AYAK)",
+ "KÜTÜK SEHPA KESTANE TOMRUK R:50/60 (3 LÜ TEL AYAK)",
+ "R:100 KESTANE TORNA AYAK MASA (TORNA AYAK)",
+ "60X140 TEKERLEK AYAK MASA",
+ "120X120 KESTANE KARE MASA (4 KÖŞEYE PROFİL AYAK)",
+ "70X120 KESTANE MASA (2 Lİ X PROFİL AYAK)",
+ "DİKDÖRTGEN KESTANE KARE MASA (2Lİ X PROFİL AYAK)",
+ "DİKDÖRTGEN KESTANE MASA (3LÜ X PROFİL AYAK)",
+ "45x DESK KESTANE MASA (2Lİ X PROFİL AYAK)",
+ "45x DESK KESTANE MASA (3LÜ X PROFİL AYAK)",
+ "45X DESK MASA KESTANE (3LÜ X PROFİL)"
+ ],
+ "Banko Uygulama": [
+ "ÖN BANKO KAPLAMA",
+ "ARKA BANKO GRANİT ALTI METAL DESTEK UYGULAMA",
+ "TEK KANAT BANKO ÇARPMA KAPI",
+ "ÇİFT KANAT BANKO ÇARPMA KAPI",
+ "EVYE",
+ "ARKA BANKO GRANİT",
+ "ARKA BANKO GRANİT ALIN H:20/25CM"
+ ],
+ "Mutfak Granit Tezgah": [
+ "GRANİT TEZGAH",
+ "PROFİL AYAK 2Lİ",
+ "EVYE"
+ ],
+ "Sedir Oturma Grupları": [
+ "DIŞ ALAN SEDİR MİNDERİ",
+ "İÇ MEKAN SEDİR 2",
+ "İÇ MEKAN SEDİR 3",
+ "DIŞ MEKAN SEDİR 1",
+ "DIŞ MEKAN SEDİR 2",
+ "DIŞ MEKAN BANK"
+ ],
+ "Kütüphane": [
+ "KÜTÜPHANE METAL",
+ "KÜTÜPHANE-2",
+ "KÜTÜPHANE-3"
+ ],
+ "Kapı": [
+ "H: 220 CM- 265 CM E KADAR ARABICA KAPI",
+ "PANEL KAPI"
+ ],
+ "Ahşap Ürün ve Diğer Üniteler": [
+ "ÇÖP DOLABI",
+ "AHŞAP DECK BASANMAK",
+ "ÜRÜN SATIŞ ÜNİTESİ",
+ "AHŞAP ÇİÇEKLİK H:85CM (ÇİÇEKLİK AKSESUAR HARİÇ)",
+ "LAKE SÜPÜRGELİK",
+ "LAMİNANT SÜPÜRGELİK"
+ ],
+ "Döşeme Grubu": [
+ "CHESTERFIALD KOLTUK 3M'YE KADAR",
+ "ÇAPRAZ SANDALYE",
+ "T SANDALYE",
+ "ÇANAK BERJER",
+ "Z SANDALYE",
+ "METAL KOLLU BERJER",
+ "POLO KREM SANDALYE",
+ "DÖKÜM SANDALYE",
+ "BAR SANDALYESİ",
+ "SİLİNDİR PUF",
+ "X METAL PROFİL AYAKLI SANDALYE",
+ "KIRLENT",
+ "TEK KİŞİLİK SALINCAK",
+ "ÇİFT KİŞİLİK SALINCAK",
+ "DIŞ MEKAN AHŞAP X AYAK OTURUM( 4 TEKLİ KOLTUK +2 AD. 60X60 MASA)",
+ "X AYAK DIŞ MEKAN 60X60 MASA",
+ "X AYAK DIŞ MEKAN KOLTUK KIRMIZI/GRİ",
+ "DIŞ MEKAN ÖRGÜ SANDALYE FİLE SANDALYE DIŞ MEKAN"
+ ]
+ }
+ },
+ "İnşaat": {
+ altlar: [],
+ urunler: [
+ "60x120 seramik",
+ "Mutfak lavabo arkası duvarı ve paspas yıkama duvarları uygun fayans",
+ "Mutfak depo ve paspas yıkama zemin için uygun seramik süpürgelik dahil",
+ "Seramik yapıştırıcısı",
+ "Derz dolgusu gri",
+ "Derz seviye artısı 1mm klips 200 adetli paket",
+ "Derz artısı 2mm palet",
+ "60x120 palet",
+ "80x120 palet",
+ "Nakliye",
+ "Dekoratif tuğla, yapıştırıcı ve derz takım olarak"
+ ]
+ },
+ "Mekanik": {
+ altlar: [],
+ urunler: [
+ { ad: "LAVABO", marka: "SEREL" },
+ { ad: "GÖMME REZERVUAR + TAŞ+KAPAK (mevcutlar kullanılacak) SERAMİKSAN", marka: "TERRA" },
+ { ad: "PİSUAR", marka: "" },
+ { ad: "LAVABO BATARYASI", marka: "ECA" },
+ { ad: "EVYE BATARYASI", marka: "ECA" },
+ { ad: "ELEKTRİKLİ ISITICI 2000W ÇİFT KADEME KUMANDALI", marka: "GUFO" },
+ { ad: "SERAMİK ISITICI 8KW ÇİFT KADEME KUMANDALI", marka: "GT-4" },
+ { ad: "SİROKKO 40 SICAK HAVA ÜRETİCİ", marka: "SIROCCO" },
+ { ad: "48000 BTU/H SALON TİPİ KLİMA", marka: "ARÇELİK" },
+ { ad: "48000 BTU/H KASET TİPİ KLİMA", marka: "ARÇELİK" },
+ { ad: "DUVAR TİPİ SPLİT KLİMA 18.000 BTU/H", marka: "ARÇELİK" },
+ { ad: "TERMİSİFON 60 LT", marka: "BAYMAK" },
+ { ad: "ISITICI KAYIT PROFİL", marka: "" }
+ ]
+ },
+ "Elektrik": {
+ altlar: [],
+ urunler: []
+ },
+ "Tente": {
+ altlar: [],
+ urunler: [
+ { ad: "DÜZ PERGOLE TENTE", olcuGiris: true },
+ { ad: "SABİT PERGOLE", olcuGiris: true },
+ { ad: "ORTA ÇELİK KARKAS VE DİREKLER", olcuGiris: false },
+ { ad: "GİOTİN", olcuGiris: false },
+ { ad: "FOTOSEL", olcuGiris: false },
+ { ad: "ÜÇGEN KAPAMA", olcuGiris: false }
+ ]
+ },
+ "Tabela": {
+ altlar: [],
+ urunler: [
+ "KUTU HARF TABELA",
+ "KOMPOZİT ZEMİN TABELA",
+ "R 60 FENER",
+ "TOTEM",
+ "MONTAJ VE NAKLİYE"
+ ]
+ },
+ "Şemsiye": {
+ altlar: [],
+ urunler: [
+ "400X400 MAGNUM TELESKOPİK ŞEMSİYE, İTHAL AKRİLİK KUMAŞ",
+ "KUMAŞ RENGİ: GRİ - ACRİLLA 111",
+ "BASKI VAR",
+ "KARE KULELİ 100 MM ORTA BORULU İSKELET RENGİ: SİYAH",
+ "MERMER AYAKLI",
+ "LED AYDINLATMA VE PRİZ",
+ "ISITICI 2500w",
+ "OLUK",
+ "NAKLİYE ve MONTAJ"
+ ]
+ },
+ "Metal İşleri": {
+ altlar: [],
+ urunler: [
+ "MERDİVEN (KORKULUK HARİÇ)",
+ "MESH KORKULUK",
+ "ÇİÇEKLİKLİ SEPERATÖR",
+ "SEPERATÖR",
+ "MESH PANO KAPISI",
+ "YOL+NAKLİYE+MONTAJ"
+ ]
+ },
+ "Doğrama-Giyotin": {
+ altlar: [],
+ urunler: [
+ { ad: "FOTOSELLİ KAPI", m2Giris: true },
+ { ad: "DOĞRAMALI FOTOSEL KAPI", m2Giris: true },
+ { ad: "ALÜMİNYUM KAPI", m2Giris: true },
+ { ad: "ÜÇGEN DOĞRAMA", m2Giris: true }
+ ]
+ }
+};
+
+// KDV Oranları - Constants
+const KDV_MOBILYA = 0.10; // Mobilya %10
+const KDV_DIGER = 0.20; // Diğer kategoriler %20
+
+let products = [];
+let aktifProje='Emek';
+let projeler={};
+let modalMode = "global";
+let karOranlari = {};
+
+// Varsayılan kısayollar
+const DEFAULT_SHORTCUTS = {
+  gotoTeklifler: 'F1',
+  gotoProjeler: 'F2',
+  focusSearch: 'Ctrl+F',
+  clearSearch: 'Ctrl+Shift+F',
+  newProduct: 'Ctrl+U',
+  categoryManagement: 'Ctrl+K',
+  projectProduct: 'Ctrl+P',
+  newProject: 'Ctrl+N',
+  profitRates: 'Ctrl+R',
+  saveProject: 'Ctrl+S',
+  confirm: 'Enter',
+  cancel: 'Esc',
+  nextField: 'Tab',
+  prevField: 'Shift+Tab',
+  prevProduct: 'Ctrl+Left',
+  nextProduct: 'Ctrl+Right',
+  openShortcuts: 'F12'
+};
+
+// Kısayolları yükle
+let customShortcuts = JSON.parse(localStorage.getItem('customShortcuts') || 'null') || {...DEFAULT_SHORTCUTS};
+
+function saveShortcuts() {
+  const inputs = document.querySelectorAll('.shortcut-input');
+  const newShortcuts = {};
+  
+  inputs.forEach(input => {
+    const action = input.getAttribute('data-action');
+    newShortcuts[action] = input.value.trim();
+  });
+  
+  customShortcuts = newShortcuts;
+  localStorage.setItem('customShortcuts', JSON.stringify(customShortcuts));
+  showUyari('Kısayollar kaydedildi!', 'success');
+  closeKisayollarModal();
+}
+
+function resetShortcuts() {
+  if (confirm('Tüm kısayolları varsayılan değerlere döndürmek istiyor musunuz?')) {
+    customShortcuts = {...DEFAULT_SHORTCUTS};
+    localStorage.setItem('customShortcuts', JSON.stringify(customShortcuts));
+    loadShortcutsToModal();
+    showUyari('Kısayollar varsayılana döndürüldü!', 'success');
+  }
+}
+
+function loadShortcutsToModal() {
+  const inputs = document.querySelectorAll('.shortcut-input');
+  inputs.forEach(input => {
+    const action = input.getAttribute('data-action');
+    if (customShortcuts[action]) {
+      input.value = customShortcuts[action];
+    }
+  });
+}
+
+function matchesShortcut(e, shortcutString) {
+  const parts = shortcutString.split('+');
+  let needsCtrl = false, needsShift = false, needsAlt = false;
+  let key = '';
+  
+  parts.forEach(part => {
+    if (part === 'Ctrl') needsCtrl = true;
+    else if (part === 'Shift') needsShift = true;
+    else if (part === 'Alt') needsAlt = true;
+    else if (part === 'Left') key = 'ArrowLeft';
+    else if (part === 'Right') key = 'ArrowRight';
+    else key = part;
+  });
+  
+  return (e.ctrlKey || e.metaKey) === needsCtrl && 
+         e.shiftKey === needsShift && 
+         e.altKey === needsAlt && 
+         (e.key === key || e.key.toLowerCase() === key.toLowerCase());
+}
+
+function initializeProducts() {
+ const stored = JSON.parse(localStorage.getItem("fiyatlar_v2") || "null");
+ if (stored && stored.length > 0) {
+ products = stored;
+ return;
+ }
+ 
+ products = [];
+ Object.keys(KATEGORILER).forEach(kat => {
+ const katData = KATEGORILER[kat];
+ 
+ if (katData.altlar.length > 0) {
+ katData.altlar.forEach(altKat => {
+ const urunler = katData.urunler[altKat] || [];
+ urunler.forEach(urun => {
+ if (typeof urun === 'string') {
+ products.push({
+ ad: urun,
+ kategori: kat,
+ altKategori: altKat,
+ marka: "",
+ para: "TL",
+ teklifler: []
+ });
+ }
+ });
+ });
+ } else {
+ const urunler = katData.urunler || [];
+ urunler.forEach(urun => {
+ if (typeof urun === 'string') {
+ products.push({
+ ad: urun,
+ kategori: kat,
+ altKategori: "",
+ marka: "",
+ para: "TL",
+ teklifler: []
+ });
+ } else if (typeof urun === 'object') {
+ products.push({
+ ad: urun.ad,
+ kategori: kat,
+ altKategori: "",
+ marka: urun.marka || "",
+ para: "TL",
+ teklifler: [],
+ olcuGiris: urun.olcuGiris || false,
+ m2Giris: urun.m2Giris || false
+ });
+ }
+ });
+ }
+ });
+ 
+ localStorage.setItem("fiyatlar_v2", JSON.stringify(products));
+}
+
+function showUyari(mesaj, tip = "info") {
+ const modal = document.getElementById("uyariModal");
+ if (!modal) {
+ alert(mesaj);
+ return;
+ }
+ const mesajEl = modal.querySelector("p");
+ if (mesajEl) {
+ mesajEl.textContent = mesaj;
+ mesajEl.style.color = tip === "danger" ? "var(--danger)" : tip === "success" ? "var(--success)" : "var(--text-primary)";
+ }
+ modal.classList.remove("hidden");
+ modal.style.display = "flex";
+ 
+ setTimeout(() => {
+ closeUyariModal();
+ }, 2000);
+}
+
+function closeUyariModal() {
+ const modal = document.getElementById("uyariModal");
+ if (modal) {
+ modal.classList.add("hidden");
+ modal.style.display = "none";
+ }
+}
+
+function showOnay(mesaj, onayCallback) {
+ const modal = document.getElementById("onayModal");
+ if (!modal) {
+ if (confirm(mesaj)) {
+ onayCallback();
+ }
+ return;
+ }
+ 
+ const mesajEl = modal.querySelector("p");
+ if (mesajEl) mesajEl.textContent = mesaj;
+ 
+ modal.classList.remove("hidden");
+ modal.style.display = "flex";
+ 
+ const evetBtn = modal.querySelector("button:first-of-type");
+ const hayirBtn = modal.querySelector("button:last-of-type");
+ 
+ const closeModal = () => {
+ modal.classList.add("hidden");
+ modal.style.display = "none";
+ };
+ 
+ evetBtn.onclick = () => {
+ onayCallback();
+ closeModal();
+ };
+ 
+ hayirBtn.onclick = closeModal;
+}
+
+function initializeKarOranlari() {
+ const stored = JSON.parse(localStorage.getItem("karOranlari") || "null");
+ if (stored) {
+ karOranlari = stored;
+ } else {
+ Object.keys(KATEGORILER).forEach(kat => {
+ karOranlari[kat] = 0.5; // Varsayılan %50 kar
+ });
+ localStorage.setItem("karOranlari", JSON.stringify(karOranlari));
+ }
+}
+
+function getKarOrani(kategori) {
+ return karOranlari[kategori] || 0.5;
+}
+
+function openKarOranModal() {
+ const modal = document.getElementById("karOranModal");
+ const container = document.getElementById("karOranContainer");
+ container.innerHTML = "";
+ 
+ Object.keys(KATEGORILER).forEach(kat => {
+ const oran = (getKarOrani(kat) * 100).toFixed(0);
+ const div = document.createElement("div");
+ div.style.cssText = "display:flex;align-items:center;gap:15px;margin:15px 0;padding:15px;background:var(--bg-main);border-radius:8px;";
+ div.innerHTML = `
+ <label style="flex:1;font-weight:600;">${kat}:</label>
+ <input type="number" id="kar_${kat}" value="${oran}" min="0" max="500" step="5" 
+ style="width:80px;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--bg-card);color:white;text-align:center;">
+ <span style="color:var(--text-secondary);">%</span>
+ `;
+ container.appendChild(div);
+ });
+ 
+ modal.classList.remove("hidden");
+ modal.style.display = "flex";
+}
+
+function closeKarOranModal() {
+ const modal = document.getElementById("karOranModal");
+ modal.classList.add("hidden");
+ modal.style.display = "none";
+}
+
+function saveKarOranlari() {
+ Object.keys(KATEGORILER).forEach(kat => {
+ const input = document.getElementById(`kar_${kat}`);
+ if (input) {
+ karOranlari[kat] = Number(input.value) / 100;
+ }
+ });
+ localStorage.setItem("karOranlari", JSON.stringify(karOranlari));
+ closeKarOranModal();
+ yukle();
+ showUyari("Kar oranları kaydedildi!");
+}
+
+function switchSection(sec){
+ const teklif = document.getElementById("teklifSection");
+ const proje = document.getElementById("projeSection");
+ const btnT = document.getElementById("btnTeklif");
+ const btnP = document.getElementById("btnProje");
+
+ if(sec === 'teklif'){
+ teklif.classList.remove("hidden");
+ proje.classList.add("hidden");
+ btnT.classList.add("aktif");
+ btnP.classList.remove("aktif");
+ renderTeklifler();
+ }else{
+ proje.classList.remove("hidden");
+ teklif.classList.add("hidden");
+ btnP.classList.add("aktif");
+ btnT.classList.remove("aktif");
+ yukle();
+ }
+}
+
+function toggleKategori(katId) {
+ const content = document.getElementById(katId);
+ const chevron = document.querySelector(`[data-kategori="${katId}"]`);
+ 
+ if (content.classList.contains('open')) {
+ content.classList.remove('open');
+ if (chevron) chevron.classList.remove('open');
+ } else {
+ content.classList.add('open');
+ if (chevron) chevron.classList.add('open');
+ }
+}
+
+function toggleAltKategori(altKatId) {
+ const content = document.getElementById(altKatId);
+ const chevron = document.querySelector(`[data-altkategori="${altKatId}"]`);
+ 
+ if (content.classList.contains('open')) {
+ content.classList.remove('open');
+ if (chevron) chevron.classList.remove('open');
+ } else {
+ content.classList.add('open');
+ if (chevron) chevron.classList.add('open');
+ }
+}
+
+function renderTeklifler(){
+ const container = document.getElementById("teklifKategoriler");
+ const search = (document.getElementById("searchInput").value || "").toLowerCase();
+ const hasSearch = search.length > 0;
+ container.innerHTML = "";
+ 
+ Object.keys(KATEGORILER).forEach(kat => {
+ const katData = KATEGORILER[kat];
+ const katId = `kat_${kat.replace(/\s/g, '_')}`;
+ 
+ // Bu kategoride arama sonucu var mı kontrol et
+ let hasMatchInCategory = false;
+ 
+ const katDiv = document.createElement("div");
+ katDiv.className = "kategori-header";
+ katDiv.onclick = () => toggleKategori(katId);
+ katDiv.innerHTML = `
+ <h3>${kat}</h3>
+ <span class="chevron" data-kategori="${katId}">▼</span>
+ `;
+ 
+ const katContent = document.createElement("div");
+ katContent.className = "kategori-content";
+ katContent.id = katId;
+ 
+ if (katData.altlar.length > 0) {
+ katData.altlar.forEach(altKat => {
+ const altKatId = `altkat_${kat.replace(/\s/g, '_')}_${altKat.replace(/\s/g, '_')}`;
+ const altKatDiv = document.createElement("div");
+ altKatDiv.className = "alt-kategori-header";
+ altKatDiv.onclick = (e) => { e.stopPropagation(); toggleAltKategori(altKatId); };
+ altKatDiv.innerHTML = `
+ <h4 style="margin:0;font-size:16px;">${altKat}</h4>
+ <span class="chevron" data-altkategori="${altKatId}">▼</span>
+ `;
+ 
+ const altKatContent = document.createElement("div");
+ altKatContent.className = "alt-kategori-content";
+ altKatContent.id = altKatId;
+ 
+ const urunler = products.filter(p => p.kategori === kat && p.altKategori === altKat && (p.ad || "").toLowerCase().includes(search));
+ 
+ if (urunler.length > 0) {
+ hasMatchInCategory = true;
+ // Arama varsa alt kategoriyi aç
+ if (hasSearch) {
+ altKatContent.classList.add('open');
+ }
+ }
+ 
+ urunler.forEach((p, i) => {
+ const globalIndex = products.indexOf(p);
+ altKatContent.appendChild(createUrunItem(p, globalIndex));
+ });
+ 
+ katContent.appendChild(altKatDiv);
+ katContent.appendChild(altKatContent);
+ });
+ } else {
+ const urunler = products.filter(p => p.kategori === kat && (p.ad || "").toLowerCase().includes(search));
+ if (urunler.length > 0) {
+ hasMatchInCategory = true;
+ }
+ urunler.forEach((p, i) => {
+ const globalIndex = products.indexOf(p);
+ katContent.appendChild(createUrunItem(p, globalIndex));
+ });
+ }
+ 
+ // Arama varsa ve bu kategoride sonuç varsa kategoriyi aç
+ if (hasSearch && hasMatchInCategory) {
+ katContent.classList.add('open');
+ }
+ 
+ container.appendChild(katDiv);
+ container.appendChild(katContent);
+ });
+}
+
+function createUrunItem(p, index) {
+ const div = document.createElement("div");
+ div.className = "urun-item";
+ 
+ const teklifFiyatlari = Array.isArray(p.teklifler) ? p.teklifler.map(t=>Number(t.fiyat)||0) : [];
+ const minPrice = teklifFiyatlari.length ? Math.min(...teklifFiyatlari) : 0;
+ const maxPrice = teklifFiyatlari.length ? Math.max(...teklifFiyatlari) : 0;
+ 
+ const offers = (p.teklifler || []).map(t => `
+ <div style="background:${t.fiyat===minPrice?'rgba(16,185,129,0.2)':t.fiyat===maxPrice?'rgba(239,68,68,0.2)':'var(--bg-card)'};padding:4px 8px;border-radius:4px;margin:2px 0;font-size:12px;">
+<strong>${t.firma}:</strong> ${(Number(t.fiyat)||0).toLocaleString('tr-TR')} ${p.para}
+ </div>`).join("");
+ 
+ div.innerHTML = `
+ <div style="flex:1;">
+ <div style="font-weight:600;margin-bottom:5px;">${p.ad}</div>
+ ${p.marka ? `<div style="font-size:12px;color:var(--text-secondary);">Marka: ${p.marka}</div>` : ''}
+ <div style="margin-top:8px;">${offers || '<span style="color:var(--text-secondary);font-size:12px;">Teklif yok</span>'}</div>
+ </div>
+ <div style="display:flex;gap:6px;align-items:center;">
+ <button onclick="editProduct(${index})" style="background:var(--primary);border:none;color:white;border-radius:6px;padding:8px 12px;cursor:pointer;font-size:13px;">Düzenle</button>
+ <button onclick="deleteProduct(${index})" style="background:var(--danger);border:none;color:white;border-radius:6px;padding:8px 12px;cursor:pointer;font-size:13px;">Sil</button>
+ </div>
+ `;
+ 
+ return div;
+}
+
+function updateAltKategori() {
+ const katSelect = document.getElementById("productCategory");
+ const altDiv = document.getElementById("altKategoriDiv");
+ const altSelect = document.getElementById("productAltCategory");
+ 
+ const selectedKat = katSelect.value;
+ 
+ if (selectedKat && KATEGORILER[selectedKat].altlar.length > 0) {
+ altDiv.style.display = "block";
+ altSelect.innerHTML = '<option value="">Seçiniz</option>';
+ KATEGORILER[selectedKat].altlar.forEach(alt => {
+ altSelect.innerHTML += `<option value="${alt}">${alt}</option>`;
+ });
+ } else {
+ altDiv.style.display = "none";
+ altSelect.innerHTML = '<option value="">Seçiniz</option>';
+ }
+}
+
+let editingIndex = -1;
+
+function openProjectModal(){
+ modalMode = "project";
+ openModal();
+}
+
+function openModal(){
+ editingIndex = -1;
+ const m = document.getElementById("productModal");
+ document.getElementById("productName").value = "";
+ document.getElementById("productBrand").value = "";
+ document.getElementById("productCurrency").value = "TL";
+ 
+ const katSelect = document.getElementById("productCategory");
+ katSelect.innerHTML = '<option value="">Seçiniz</option>';
+ Object.keys(KATEGORILER).forEach(kat => {
+ katSelect.innerHTML += `<option value="${kat}">${kat}</option>`;
+ });
+ 
+ updateAltKategori();
+ 
+ const c = document.getElementById("offersContainer");
+ c.innerHTML = "";
+ addOfferRow();
+ m.classList.remove("hidden");
+ m.style.display = "flex";
+ 
+ const infoBox = document.getElementById("modalInfoBox");
+ if (infoBox) {
+   infoBox.style.display = "block";
+ }
+ 
+ // Navigasyon butonlarını gizle (yeni ürün eklerken)
+ const nav = document.getElementById("productNavigation");
+ const productNameDisplay = document.getElementById("currentProductName");
+ 
+ if (nav) {
+   nav.style.display = "none";
+ }
+ 
+ if (productNameDisplay) {
+   productNameDisplay.style.display = "none";
+ }
+ 
+ if (modalMode === "project") {
+ document.getElementById("modalTitle").textContent = "Bu Projeye Özel Ürün Ekle";
+ infoBox.innerHTML = "Bu ürün <strong>sadece şu anki projede</strong> görünecektir.";
+ infoBox.style.borderLeftColor = "var(--success)";
+ infoBox.style.background = "rgba(16,185,129,0.1)";
+ } else {
+ document.getElementById("modalTitle").textContent = "Ürün Ekle/Düzenle (Tüm Projeler)";
+ infoBox.innerHTML = "Bu ürün <strong>tüm projelerde</strong> kullanılabilir olacaktır.";
+ infoBox.style.borderLeftColor = "var(--primary)";
+ infoBox.style.background = "rgba(59,130,246,0.1)";
+ }
+}
+
+function editProduct(i) {
+ editingIndex = i;
+ const p = products[i];
+ 
+ const m = document.getElementById("productModal");
+ document.getElementById("productName").value = p.ad;
+ document.getElementById("productBrand").value = p.marka || "";
+ document.getElementById("productCurrency").value = p.para;
+ 
+ const katSelect = document.getElementById("productCategory");
+ katSelect.innerHTML = '<option value="">Seçiniz</option>';
+ Object.keys(KATEGORILER).forEach(kat => {
+ const selected = kat === p.kategori ? 'selected' : '';
+ katSelect.innerHTML += `<option value="${kat}" ${selected}>${kat}</option>`;
+ });
+ 
+ updateAltKategori();
+ 
+ if (p.altKategori) {
+ document.getElementById("productAltCategory").value = p.altKategori;
+ }
+ 
+ const c = document.getElementById("offersContainer");
+ c.innerHTML = "";
+ 
+ if (p.teklifler && p.teklifler.length > 0) {
+ p.teklifler.forEach(t => addOfferRow(t.firma, t.fiyat));
+ } else {
+ addOfferRow();
+ }
+ 
+ m.classList.remove("hidden");
+ m.style.display = "flex";
+ document.getElementById("modalTitle").textContent = "Ürün Düzenle";
+ 
+ // Düzenleme modunda info box'ı gizle
+ const infoBox = document.getElementById("modalInfoBox");
+ if (infoBox) {
+   infoBox.style.display = "none";
+ }
+ 
+ // Navigasyon butonlarını göster ve sayacı güncelle
+ const nav = document.getElementById("productNavigation");
+ const counter = document.getElementById("productCounter");
+ const productNameDisplay = document.getElementById("currentProductName");
+ 
+ if (nav && counter) {
+   nav.style.display = "flex";
+   counter.textContent = `${i + 1} / ${products.length}`;
+ }
+ 
+ if (productNameDisplay) {
+   productNameDisplay.style.display = "block";
+   productNameDisplay.textContent = p.ad || "İsimsiz Ürün";
+   productNameDisplay.title = p.ad || "İsimsiz Ürün"; // Hover'da tam ismi göster
+ }
+}
+
+function navigateProduct(direction) {
+  if (editingIndex === -1 || products.length === 0) return;
+  
+  // Yeni index hesapla (circular navigation)
+  let newIndex = editingIndex + direction;
+  if (newIndex < 0) newIndex = products.length - 1;
+  if (newIndex >= products.length) newIndex = 0;
+  
+  // Yeni ürünü düzenle
+  editProduct(newIndex);
+}
+
+function closeModal(){
+ const m = document.getElementById("productModal");
+ m.classList.add("hidden");
+ m.style.display = "none";
+ modalMode = "global";
+ editingIndex = -1;
+}
+
+document.getElementById("productModal").addEventListener("click", e=>{
+ if(e.target.id==="productModal") closeModal();
+});
+
+document.getElementById("karOranModal").addEventListener("click", e=>{
+ if(e.target.id==="karOranModal") closeKarOranModal();
+});
+
+document.addEventListener("keydown", e => { 
+  // ESC - Tüm modal'ları kapat
+  if (e.key === "Escape") {
+    closeModal();
+    closeKarOranModal();
+    closeKategoriYonetimModal();
+    closeYeniProjeModal();
+    closeKisayollarModal();
+    closeUyariModal();
+    closeOnayModal();
+    return;
+  }
+  
+  // Enter - Modal içinde onay butonlarını tetikle
+  if (e.key === "Enter") {
+    // Product Modal - Save button
+    const productModal = document.getElementById("productModal");
+    if (productModal && !productModal.classList.contains("hidden")) {
+      e.preventDefault();
+      saveProduct();
+      return;
+    }
+    
+    // Kar Orani Modal - Save button
+    const karModal = document.getElementById("karOranModal");
+    if (karModal && !karModal.classList.contains("hidden")) {
+      e.preventDefault();
+      saveKarOranlari();
+      return;
+    }
+    
+    // Yeni Proje Modal - Save button
+    const yeniProjeModal = document.getElementById("yeniProjeModal");
+    if (yeniProjeModal && !yeniProjeModal.classList.contains("hidden")) {
+      e.preventDefault();
+      kaydetYeniProje();
+      return;
+    }
+  }
+  
+  // Ctrl/Cmd kombinasyonları
+  if (e.ctrlKey || e.metaKey) {
+    switch(e.key.toLowerCase()) {
+      case 'f': // Ctrl+F - Arama
+        e.preventDefault();
+        const currentSection = document.getElementById("teklifSection").classList.contains("hidden") ? "proje" : "teklif";
+        if (currentSection === "teklif") {
+          document.getElementById("searchInput").focus();
+        } else {
+          document.getElementById("arama").focus();
+        }
+        break;
+        
+      case 'u': // Ctrl+U - Yeni Ürün Ekle (Global)
+        e.preventDefault();
+        modalMode = "global";
+        openModal();
+        break;
+        
+      case 'k': // Ctrl+K - Kategori Yönetimi
+        e.preventDefault();
+        openKategoriYonetimModal();
+        break;
+        
+      case 'p': // Ctrl+P - Bu Projeye Özel Ürün
+        e.preventDefault();
+        if (!document.getElementById("projeSection").classList.contains("hidden")) {
+          openProjectModal();
+        }
+        break;
+        
+      case 'n': // Ctrl+N - Yeni Proje
+        e.preventDefault();
+        yeniProje();
+        break;
+        
+      case 'r': // Ctrl+R - Kar Oranları
+        e.preventDefault();
+        if (!document.getElementById("projeSection").classList.contains("hidden")) {
+          openKarOranModal();
+        }
+        break;
+        
+      case 's': // Ctrl+S - Save feedback (already auto-saves)
+        e.preventDefault();
+        showUyari("Değişiklikler otomatik kaydedildi!", "success");
+        break;
+    }
+  }
+  
+  // Ctrl + Arrow keys - Product navigation in edit mode
+  if (e.ctrlKey && !e.shiftKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+    const productModal = document.getElementById("productModal");
+    if (productModal && !productModal.classList.contains("hidden") && editingIndex !== -1) {
+      e.preventDefault();
+      navigateProduct(e.key === 'ArrowLeft' ? -1 : 1);
+    }
+  }
+  
+  // Ctrl + Shift + F - Clear search
+  if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'f') {
+    e.preventDefault();
+    const currentSection = document.getElementById("teklifSection").classList.contains("hidden") ? "proje" : "teklif";
+    if (currentSection === "teklif") {
+      document.getElementById("searchInput").value = "";
+      renderTeklifler();
+    } else {
+      document.getElementById("arama").value = "";
+      yukle();
+    }
+    showUyari("Arama temizlendi", "success");
+  }
+  
+  // F tuşları (Ctrl olmadan)
+  if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+    switch(e.key) {
+      case 'F1': // F1 - Teklifler
+        e.preventDefault();
+        switchSection('teklif');
+        break;
+        
+      case 'F2': // F2 - Projeler
+        e.preventDefault();
+        switchSection('proje');
+        break;
+        
+      case 'F12': // F12 - Kısayollar modal'ı
+        e.preventDefault();
+        openKisayollarModal();
+        break;
+    }
+  }
+});
+
+function closeOnayModal() {
+  const modal = document.getElementById("onayModal");
+  if (modal) {
+    modal.classList.add("hidden");
+    modal.style.display = "none";
+  }
+}
+
+function addOfferRow(firma="", fiyat=""){
+ const c=document.getElementById("offersContainer");
+ const row=document.createElement("div");
+ row.style.display="flex"; row.style.gap="8px"; row.style.margin="6px 0";
+ row.innerHTML=`
+ <input placeholder="Firma/Şahıs" value="${firma}" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg-main);color:var(--text-primary);">
+ <input type="number" placeholder="Fiyat" value="${fiyat}" style="width:140px;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg-main);color:var(--text-primary);">
+ <button onclick="this.parentElement.remove()" style="background:var(--danger);border:none;color:white;border-radius:8px;padding:8px 10px;cursor:pointer;">Sil</button>`;
+ c.appendChild(row);
+}
+
+function saveProduct(){
+ const name = document.getElementById("productName").value.trim();
+ const kategori = document.getElementById("productCategory").value;
+ const altKategori = document.getElementById("productAltCategory").value;
+ const marka = document.getElementById("productBrand").value.trim();
+ const para = document.getElementById("productCurrency").value;
+ const rows = document.querySelectorAll("#offersContainer > div");
+ const teklifler = [];
+ 
+ rows.forEach(r=>{
+ const inputs=r.querySelectorAll("input");
+ const firma=inputs[0].value.trim();
+ const fiyat=Number(inputs[1].value);
+ if(firma&&fiyat>0) teklifler.push({firma,fiyat});
+ });
+ 
+ if(!name || !kategori){ 
+ showUyari("Ürün adı ve kategori zorunludur.");
+ return; 
+ }
+
+ const productData = {
+ ad: name,
+ kategori: kategori,
+ altKategori: altKategori || "",
+ marka: marka,
+ para: para,
+ teklifler: teklifler
+ };
+
+ if(modalMode==="project"){
+ if(!projeler[aktifProje]) projeler[aktifProje]={};
+ if(!projeler[aktifProje].ozelUrunler) projeler[aktifProje].ozelUrunler=[];
+ projeler[aktifProje].ozelUrunler.push(productData);
+ localStorage.setItem("projeler",JSON.stringify(projeler));
+ yukle();
+ } else {
+ if (editingIndex >= 0) {
+ products[editingIndex] = productData;
+ } else {
+ products.push(productData);
+ }
+ localStorage.setItem("fiyatlar_v2",JSON.stringify(products));
+ renderTeklifler();
+ if(!document.getElementById("projeSection").classList.contains("hidden")) yukle();
+ }
+
+ closeModal();
+}
+
+function deleteProduct(i){
+ showOnay("Bu ürünü silmek istiyor musunuz?", function() {
+ products.splice(i,1);
+ localStorage.setItem("fiyatlar_v2",JSON.stringify(products));
+ renderTeklifler();
+ if(!document.getElementById("projeSection").classList.contains("hidden")) yukle();
+ });
+}
+
+document.getElementById("searchInput").addEventListener("input", renderTeklifler);
+
+projeler=JSON.parse(localStorage.getItem("projeler")||"{}");
+if(Object.keys(projeler).length===0) projeler={Emek:{}};
+if(!projeler[aktifProje]) projeler[aktifProje]={};
+
+
+// === AKTIF/PASIF ÜRÜN SİSTEMİ ===
+function isUrunAktif(urunAd) {
+  if (!projeler[aktifProje]) return true;
+  if (!projeler[aktifProje].pasifUrunler) return true;
+  return !projeler[aktifProje].pasifUrunler.includes(urunAd);
+}
+
+function toggleUrunAktif(urunAd) {
+  if (!projeler[aktifProje]) projeler[aktifProje] = {};
+  if (!projeler[aktifProje].pasifUrunler) projeler[aktifProje].pasifUrunler = [];
+  
+  const index = projeler[aktifProje].pasifUrunler.indexOf(urunAd);
+  
+  if (index > -1) {
+    // Pasiften aktife al
+    projeler[aktifProje].pasifUrunler.splice(index, 1);
+    showUyari(urunAd + ' aktif edildi!', 'success');
+  } else {
+    // Aktiften pasife al
+    projeler[aktifProje].pasifUrunler.push(urunAd);
+    showUyari(urunAd + ' pasif edildi!', 'warning');
+  }
+  
+  // Tüm checkbox'ları güncelle (hem DDY hem Şube tablolarında)
+  const checkboxes = document.querySelectorAll(`input[type="checkbox"][data-urun="${urunAd}"]`);
+  checkboxes.forEach(cb => {
+    cb.checked = index > -1; // Pasiften aktife alındıysa checked olsun
+  });
+  
+  localStorage.setItem(PROJE_STORAGE_KEY, JSON.stringify(projeler));
+  yukle();
+}
+
+// === DASHBOARD FONKSİYONU ===
+function renderDashboard() {
+  const container = document.getElementById('dashboardContent');
+  if (!container) return;
+  
+  const kategoriler = getKategoriler();
+  const fiyatlarTum = [...products];
+  const projeOzel = (projeler[aktifProje] && projeler[aktifProje].ozelUrunler) || [];
+  fiyatlarTum.push(...projeOzel);
+  
+  let html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px;">';
+  
+  Object.keys(kategoriler).sort().forEach(kategori => {
+    const kategoriUrunler = fiyatlarTum.filter(p => p.kategori === kategori);
+    const toplamUrun = kategoriUrunler.length;
+    
+    // Aktif ürün sayısı
+    const aktifUrunler = kategoriUrunler.filter(u => isUrunAktif(u.ad));
+    const aktifSayisi = aktifUrunler.length;
+    
+    // Projede kullanılan ürün sayısı (adet > 0)
+    const projeVeri = projeler[aktifProje] || {};
+    const kullanilanUrunler = aktifUrunler.filter(u => Number(projeVeri[u.ad] || 0) > 0);
+    const kullanilanSayisi = kullanilanUrunler.length;
+    
+    // Yüzde hesapla
+    const yuzde = aktifSayisi > 0 ? Math.round((kullanilanSayisi / aktifSayisi) * 100) : 0;
+    
+    // Renk belirle
+    let barColor = '#64748b';
+    if (yuzde > 70) barColor = 'var(--success)';
+    else if (yuzde > 30) barColor = 'var(--warning)';
+    else if (yuzde > 0) barColor = 'var(--primary)';
+    
+    html += `
+      <div style="background:var(--bg-main);padding:15px;border-radius:10px;border:1px solid var(--border);">
+        <h4 style="margin:0 0 10px 0;color:var(--text-primary);font-size:14px;">${kategori}</h4>
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;">
+          <div>Toplam Ürün: <strong style="color:var(--text-primary);">${toplamUrun}</strong></div>
+          <div>Aktif: <strong style="color:var(--success);">${aktifSayisi}</strong></div>
+          <div>Kullanılan: <strong style="color:${barColor};">${kullanilanSayisi}</strong></div>
+        </div>
+        <div style="background:var(--bg-card);height:8px;border-radius:4px;overflow:hidden;">
+          <div style="width:${yuzde}%;height:100%;background:${barColor};transition:width 0.3s;"></div>
+        </div>
+        <div style="text-align:center;margin-top:5px;font-size:13px;font-weight:600;color:${barColor};">${yuzde}%</div>
+      </div>
+    `;
+  });
+  
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+
+// Progress bar hesaplama
+function hesaplaProgress(proje, kategori = null) {
+  let toplamAktif = 0;
+  let kullanilan = 0;
+  
+  const tumUrunler = [...products];
+  const projeOzel = (projeler[aktifProje] && projeler[aktifProje].ozelUrunler) || [];
+  tumUrunler.push(...projeOzel);
+  
+  tumUrunler.forEach(u => {
+    if (kategori && u.kategori !== kategori) return;
+    if (!isUrunAktif(u.ad)) return;
+    toplamAktif++;
+    const projUrun = proje.urunler.find(pu => pu.ad === u.ad);
+    if (projUrun && projUrun.adet > 0) kullanilan++;
+  });
+  
+  return toplamAktif > 0 ? Math.round((kullanilan / toplamAktif) * 100) : 0;
+}
+
+function progressBarHTML(yuzde, buyuk = false) {
+  const width = buyuk ? 250 : 150;
+  const height = buyuk ? 10 : 8;
+  return `<span style="display:inline-block;width:${width}px;height:${height}px;background:var(--bg-main);border-radius:4px;margin:0 10px;vertical-align:middle;overflow:hidden;">
+    <span style="display:block;width:${Math.round((yuzde/100)*width)}px;height:100%;background:linear-gradient(90deg,var(--success),var(--primary));transition:width 0.3s;"></span>
+  </span><span style="color:var(--success);font-weight:600;font-size:14px;">${yuzde}%</span>`;
+}
+
+function renderProjeler(){
+ const div=document.getElementById("projeler");
+ if(!div) return;
+ div.innerHTML="";
+ Object.keys(projeler).forEach(ad=>{
+ const btn=document.createElement("button");
+ btn.textContent=ad;
+ btn.style.border="1px solid var(--border)";
+ btn.style.borderRadius="10px";
+ btn.style.padding="10px 14px";
+ btn.style.background=(ad===aktifProje)?"linear-gradient(135deg,var(--primary),var(--primary-dark))":"var(--bg-card)";
+ btn.style.color=(ad===aktifProje)?"#fff":"var(--text-secondary)";
+ btn.style.cursor="pointer";
+ btn.style.transition="all 0.3s";
+ btn.onclick=()=>projeDegistir(ad);
+ const sil=document.createElement("span");
+ sil.textContent=" ✖"; sil.style.color="var(--danger)";
+ sil.style.cursor="pointer";
+ sil.style.marginLeft="8px";
+ sil.onclick=(e)=>{e.stopPropagation();projeSil(ad);};
+ btn.appendChild(sil);
+ div.appendChild(btn);
+ });
+ const yeni=document.createElement("button");
+ yeni.textContent="+ Yeni Proje";
+ yeni.style.background="var(--success)";
+ yeni.style.color="#fff";
+ yeni.style.border="none";
+ yeni.style.borderRadius="10px";
+ yeni.style.padding="10px 14px";
+ yeni.style.cursor="pointer";
+ yeni.style.transition="all 0.3s";
+ yeni.onclick = () => yeniProje();
+ div.appendChild(yeni);
+}
+
+function projeSil(ad){
+ showOnay(`"${ad}" projesini silmek istiyor musunuz?`, function() {
+ delete projeler[ad];
+ localStorage.setItem("projeler",JSON.stringify(projeler));
+ aktifProje=Object.keys(projeler)[0]||"Emek";
+ if(!projeler[aktifProje]) projeler[aktifProje]={};
+ document.getElementById("projeBaslik").textContent="Proje: "+aktifProje;
+ renderProjeler();
+ yukle();
+ });
+}
+
+function projeDegistir(ad){
+ aktifProje=ad;
+ if(!projeler[aktifProje]) projeler[aktifProje]={};
+ localStorage.setItem("projeler",JSON.stringify(projeler));
+ document.getElementById("projeBaslik").textContent="Proje: "+ad;
+ renderProjeler();
+ yukle();
+}
+
+function yeniProje(){
+ const modal = document.getElementById("yeniProjeModal");
+ const input = document.getElementById("yeniProjeAdi");
+ if (modal && input) {
+ input.value = "";
+ modal.classList.remove("hidden");
+ modal.style.display = "flex";
+ input.focus();
+ } else {
+ // Fallback to prompt if modal not found
+ const ad=prompt("Yeni proje adı:");
+ if(!ad || ad.trim()==="")return;
+ const trimmedAd = ad.trim();
+ if(projeler[trimmedAd]){alert("Bu proje zaten mevcut.");return;}
+ projeler[trimmedAd]={};
+ aktifProje=trimmedAd;
+ localStorage.setItem("projeler",JSON.stringify(projeler));
+ document.getElementById("projeBaslik").textContent="Proje: "+trimmedAd;
+ renderProjeler();
+ yukle();
+ }
+}
+
+function kaydetYeniProje() {
+ const input = document.getElementById("yeniProjeAdi");
+ const ad = input.value.trim();
+ 
+ if(!ad || ad === "") {
+ showUyari("Proje adı boş olamaz!", "danger");
+ return;
+ }
+ 
+ if(projeler[ad]) {
+ showUyari("Bu proje zaten mevcut!", "danger");
+ return;
+ }
+ 
+ projeler[ad] = {};
+ aktifProje = ad;
+ localStorage.setItem("projeler", JSON.stringify(projeler));
+ document.getElementById("projeBaslik").textContent = "Proje: " + ad;
+ 
+ closeYeniProjeModal();
+ renderProjeler();
+ yukle();
+ 
+ showUyari(`${ad} projesi oluşturuldu!`, "success");
+}
+
+function closeYeniProjeModal() {
+ const modal = document.getElementById("yeniProjeModal");
+ if (modal) {
+ modal.classList.add("hidden");
+ modal.style.display = "none";
+ }
+}
+
+function openKategoriYonetimModal() {
+ const modal = document.getElementById("kategoriYonetimModal");
+ if (!modal) return;
+ 
+ // Ana kategori seçim listesini doldur
+ const select = document.getElementById("anaKategoriSec");
+ select.innerHTML = '<option value="">Ana Kategori Seçin</option>';
+ Object.keys(KATEGORILER).forEach(kat => {
+ select.innerHTML += `<option value="${kat}">${kat}</option>`;
+ });
+ 
+ // Mevcut kategorileri listele
+ renderKategoriListesi();
+ 
+ modal.classList.remove("hidden");
+ modal.style.display = "flex";
+}
+
+function closeKategoriYonetimModal() {
+  const modal = document.getElementById("kategoriYonetimModal");
+  if (modal) {
+    modal.classList.add("hidden");
+    modal.style.display = "none";
+  }
+}
+
+function openKisayollarModal() {
+  const modal = document.getElementById("kisayollarModal");
+  if (modal) {
+    modal.classList.remove("hidden");
+    modal.style.display = "flex";
+    loadShortcutsToModal();
+  }
+}
+
+function closeKisayollarModal() {
+  const modal = document.getElementById("kisayollarModal");
+  if (modal) {
+    modal.classList.add("hidden");
+    modal.style.display = "none";
+  }
+}
+
+function renderKategoriListesi() {
+ const container = document.getElementById("kategoriListesi");
+ if (!container) return;
+ 
+ container.innerHTML = "";
+ 
+ Object.keys(KATEGORILER).forEach(kat => {
+ const katData = KATEGORILER[kat];
+ const katDiv = document.createElement("div");
+ katDiv.style.marginBottom = "15px";
+ katDiv.style.padding = "15px";
+ katDiv.style.background = "var(--bg-card)";
+ katDiv.style.borderRadius = "8px";
+ katDiv.style.border = "1px solid var(--border)";
+ 
+ let altKatHTML = '';
+ if (katData.altlar && katData.altlar.length > 0) {
+ altKatHTML = `
+ <div style="margin-top:10px;padding-left:20px;">
+ <div style="font-size:12px;color:var(--text-secondary);margin-bottom:5px;">Alt Kategoriler:</div>
+ ${katData.altlar.map(alt => `
+ <div style="display:flex;align-items:center;justify-content:space-between;padding:5px 10px;background:var(--bg-main);margin:3px 0;border-radius:5px;">
+ <span style="font-size:13px;">• ${alt}</span>
+ <button onclick="altKategoriSil('${kat}', '${alt}')" 
+ style="background:var(--danger);color:white;border:none;border-radius:4px;padding:3px 8px;cursor:pointer;font-size:11px;">
+ Sil
+ </button>
+ </div>
+ `).join('')}
+ </div>
+ `;
+ }
+ 
+ katDiv.innerHTML = `
+ <div style="display:flex;align-items:center;justify-content:space-between;">
+ <div style="flex:1;">
+ <div style="font-weight:600;font-size:15px;margin-bottom:5px;">${kat}</div>
+ <div style="font-size:12px;color:var(--text-secondary);">
+ ${katData.altlar && katData.altlar.length > 0 ? `${katData.altlar.length} alt kategori` : 'Alt kategori yok'}
+ </div>
+ </div>
+ <button onclick="kategoriSil('${kat}')" 
+ style="background:var(--danger);color:white;border:none;border-radius:6px;padding:8px 15px;cursor:pointer;font-size:12px;">
+ Kategoriyi Sil
+ </button>
+ </div>
+ ${altKatHTML}
+ `;
+ 
+ container.appendChild(katDiv);
+ });
+}
+
+function yeniKategoriEkle() {
+ const input = document.getElementById("yeniKategoriAdi");
+ const ad = input.value.trim();
+ 
+ if (!ad) {
+ showUyari("Kategori adı boş olamaz!", "danger");
+ return;
+ }
+ 
+ if (KATEGORILER[ad]) {
+ showUyari("Bu kategori zaten mevcut!", "danger");
+ return;
+ }
+ 
+ // Yeni kategori ekle
+ KATEGORILER[ad] = {
+ altlar: [],
+ urunler: []
+ };
+ 
+ // LocalStorage'a kaydet
+ localStorage.setItem("kategoriler", JSON.stringify(KATEGORILER));
+ 
+ // Kar oranını initialize et
+ if (!karOranlari[ad]) {
+ karOranlari[ad] = 0.5;
+ localStorage.setItem("karOranlari", JSON.stringify(karOranlari));
+ }
+ 
+ input.value = "";
+ renderKategoriListesi();
+ 
+ // Ana kategori seçim listesini güncelle
+ const select = document.getElementById("anaKategoriSec");
+ select.innerHTML += `<option value="${ad}">${ad}</option>`;
+ 
+ showUyari(`${ad} kategorisi eklendi!`, "success");
+ 
+ // Teklifler sayfasını güncelle
+ renderTeklifler();
+}
+
+function yeniAltKategoriEkle() {
+ const select = document.getElementById("anaKategoriSec");
+ const input = document.getElementById("yeniAltKategoriAdi");
+ const anaKat = select.value;
+ const altKatAd = input.value.trim();
+ 
+ if (!anaKat) {
+ showUyari("Lütfen ana kategori seçin!", "danger");
+ return;
+ }
+ 
+ if (!altKatAd) {
+ showUyari("Alt kategori adı boş olamaz!", "danger");
+ return;
+ }
+ 
+ if (!KATEGORILER[anaKat]) {
+ showUyari("Ana kategori bulunamadı!", "danger");
+ return;
+ }
+ 
+ if (KATEGORILER[anaKat].altlar.includes(altKatAd)) {
+ showUyari("Bu alt kategori zaten mevcut!", "danger");
+ return;
+ }
+ 
+ // Alt kategori ekle
+ KATEGORILER[anaKat].altlar.push(altKatAd);
+ 
+ // Eğer urunler objesi yoksa oluştur
+ if (!KATEGORILER[anaKat].urunler) {
+ KATEGORILER[anaKat].urunler = {};
+ }
+ if (typeof KATEGORILER[anaKat].urunler !== 'object' || Array.isArray(KATEGORILER[anaKat].urunler)) {
+ KATEGORILER[anaKat].urunler = {};
+ }
+ KATEGORILER[anaKat].urunler[altKatAd] = [];
+ 
+ // LocalStorage'a kaydet
+ localStorage.setItem("kategoriler", JSON.stringify(KATEGORILER));
+ 
+ input.value = "";
+ renderKategoriListesi();
+ showUyari(`${altKatAd} alt kategorisi ${anaKat} kategorisine eklendi!`, "success");
+ 
+ // Teklifler sayfasını güncelle
+ renderTeklifler();
+}
+
+function kategoriSil(kategori) {
+ showOnay(`"${kategori}" kategorisini silmek istiyor musunuz?\n\nDikkat: Bu kategorideki tüm ürünler de silinecektir!`, function() {
+ // Kategorideki tüm ürünleri sil
+ products = products.filter(p => p.kategori !== kategori);
+ localStorage.setItem("fiyatlar_v2", JSON.stringify(products));
+ 
+ // Kategoriyi sil
+ delete KATEGORILER[kategori];
+ localStorage.setItem("kategoriler", JSON.stringify(KATEGORILER));
+ 
+ // Kar oranını sil
+ delete karOranlari[kategori];
+ localStorage.setItem("karOranlari", JSON.stringify(karOranlari));
+ 
+ renderKategoriListesi();
+ showUyari(`${kategori} kategorisi silindi!`, "success");
+ 
+ // Teklifler ve projeler sayfasını güncelle
+ renderTeklifler();
+ yukle();
+ });
+}
+
+function altKategoriSil(kategori, altKategori) {
+ showOnay(`"${altKategori}" alt kategorisini silmek istiyor musunuz?\n\nDikkat: Bu alt kategorideki tüm ürünler de silinecektir!`, function() {
+ // Alt kategorideki tüm ürünleri sil
+ products = products.filter(p => !(p.kategori === kategori && p.altKategori === altKategori));
+ localStorage.setItem("fiyatlar_v2", JSON.stringify(products));
+ 
+ // Alt kategoriyi sil
+ const index = KATEGORILER[kategori].altlar.indexOf(altKategori);
+ if (index > -1) {
+ KATEGORILER[kategori].altlar.splice(index, 1);
+ }
+ 
+ // Ürünler objesinden de sil
+ if (KATEGORILER[kategori].urunler && KATEGORILER[kategori].urunler[altKategori]) {
+ delete KATEGORILER[kategori].urunler[altKategori];
+ }
+ 
+ localStorage.setItem("kategoriler", JSON.stringify(KATEGORILER));
+ 
+ renderKategoriListesi();
+ showUyari(`${altKategori} alt kategorisi silindi!`, "success");
+ 
+ // Teklifler ve projeler sayfasını güncelle
+ renderTeklifler();
+ yukle();
+ });
+}
+
+function filtrele(){yukle();}
+function temizleArama(){document.getElementById("arama").value="";yukle();}
+
+function yukle(){
+ const fiyatlarTum=[...products];
+ const projeOzel=(projeler[aktifProje]&&projeler[aktifProje].ozelUrunler)||[];
+ fiyatlarTum.push(...projeOzel);
+ 
+ const projeVeri=projeler[aktifProje]||{};
+ const q=(document.getElementById("arama").value||"").toLowerCase();
+ const hasSearch = q.length > 0;
+ const tbodyM=document.querySelector("#maliyetTablo tbody");
+ const tbodyS=document.querySelector("#satisTablo tbody");
+ if(!tbodyM||!tbodyS)return;
+ tbodyM.innerHTML="";tbodyS.innerHTML="";
+ let DDY={TL_H:0,TL_K:0,TL_D:0,USD_H:0,USD_K:0,USD_D:0};
+ let SUBE={TL_H:0,TL_K:0,TL_D:0,USD_H:0,USD_K:0,USD_D:0};
+
+ // Kategorilere göre grupla
+ const kategoriler = {};
+ fiyatlarTum.forEach(f=>{
+ if(q&&!(f.ad||"").toLowerCase().includes(q))return;
+ const kat = f.kategori || "Diğer";
+ if(!kategoriler[kat]) kategoriler[kat] = [];
+ kategoriler[kat].push(f);
+ });
+
+ // Her kategori için başlık ve ürünler
+ Object.keys(kategoriler).sort().forEach(kategori => {
+ const katId = `proj_kat_${kategori.replace(/\s/g, '_')}`;
+ 
+ // Maliyet tablosu kategori başlığı
+ const trKatM = document.createElement("tr");
+ trKatM.className = "kategori-row";
+ trKatM.style.background = "var(--bg-hover)";
+ 
+ // Progress bar hesapla
+ const projeData = {urunler: [], ad: aktifProje};
+ Object.keys(projeVeri).forEach(urunAd => {
+   if (urunAd !== 'karOranlari' && urunAd !== 'ozelUrunler') {
+     projeData.urunler.push({ad: urunAd, adet: projeVeri[urunAd] || 0});
+   }
+ });
+ const katProgress = hesaplaProgress(projeData, kategori);
+ 
+ trKatM.innerHTML = `
+ <td colspan="6" style="text-align:left;font-weight:bold;padding:12px;">
+ <div style="display:flex;align-items:center;justify-content:space-between;">
+ <div style="cursor:pointer;flex:1;display:flex;align-items:center;gap:10px;" onclick="toggleProjeKategori('${katId}')">
+ <span class="chevron" data-proj-kat="${katId}">${hasSearch ? '▼' : '▶'}</span> 
+ <span>${kategori}</span>
+ ${progressBarHTML(katProgress)}
+ </div>
+ <div style="display:flex;gap:8px;">
+   <button onclick="event.stopPropagation();exportKategoriToExcel('${kategori}', 'maliyet')" 
+           style="background:var(--success);color:white;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:11px;font-weight:600;">
+     Excel İndir
+   </button>
+   <button onclick="event.stopPropagation();exportKategoriToWord('${kategori}', 'maliyet')" 
+           style="background:#2563eb;color:white;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:11px;font-weight:600;">
+     Word İndir
+   </button>
+   <button onclick="event.stopPropagation();exportKategoriToPDF('${kategori}', 'maliyet')" 
+           style="background:#ef4444;color:white;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:11px;font-weight:600;">
+     PDF İndir
+   </button>
+ </div>
+ </div>
+ </td>
+ `;
+ tbodyM.appendChild(trKatM);
+ 
+ // Satış tablosu kategori başlığı
+ const trKatS = document.createElement("tr");
+ trKatS.className = "kategori-row";
+ trKatS.style.background = "var(--bg-hover)";
+ trKatS.innerHTML = `
+ <td colspan="6" style="text-align:left;font-weight:bold;padding:12px;">
+ <div style="display:flex;align-items:center;justify-content:space-between;">
+ <div style="cursor:pointer;flex:1;display:flex;align-items:center;gap:10px;" onclick="toggleProjeKategori('${katId}')">
+ <span class="chevron" data-proj-kat="${katId}">${hasSearch ? '▼' : '▶'}</span> 
+ <span>${kategori}</span>
+ ${progressBarHTML(katProgress)}
+ </div>
+ <div style="display:flex;gap:8px;">
+   <button onclick="event.stopPropagation();exportKategoriToExcel('${kategori}', 'satis')" 
+           style="background:var(--primary);color:white;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:11px;font-weight:600;">
+     Excel İndir
+   </button>
+   <button onclick="event.stopPropagation();exportKategoriToWord('${kategori}', 'satis')" 
+           style="background:#2563eb;color:white;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:11px;font-weight:600;">
+     Word İndir
+   </button>
+   <button onclick="event.stopPropagation();exportKategoriToPDF('${kategori}', 'satis')" 
+           style="background:#ef4444;color:white;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:11px;font-weight:600;">
+     PDF İndir
+   </button>
+ </div>
+ </div>
+ </td>
+ `;
+ tbodyS.appendChild(trKatS);
+ 
+ // Kategorideki ürünler
+ let katMaliyetTL_H = 0, katMaliyetTL_K = 0, katMaliyetTL_D = 0;
+ let katMaliyetUSD_H = 0, katMaliyetUSD_K = 0, katMaliyetUSD_D = 0;
+ let katSatisTL_H = 0, katSatisTL_K = 0, katSatisTL_D = 0;
+ let katSatisUSD_H = 0, katSatisUSD_K = 0, katSatisUSD_D = 0;
+ 
+ kategoriler[kategori].forEach(f=>{
+ const adet=Number(projeVeri[f.ad]||0);
+ let fiyatListesi=[];
+ if(Array.isArray(f.teklifler)&&f.teklifler.length){
+ fiyatListesi=f.teklifler.map(t=>Number(t.fiyat)||0);
+ }
+ const enYuksek=fiyatListesi.length?Math.max(...fiyatListesi):0;
+ 
+ const karOrani = getKarOrani(f.kategori);
+ const fiyatSatis=enYuksek*(1 + karOrani);
+ 
+ const kdvOrani = f.kategori === "Mobilya" ? KDV_MOBILYA : KDV_DIGER;
+ const kdvM=enYuksek*kdvOrani;
+ const kdvS=fiyatSatis*kdvOrani;
+ 
+ const paraSimge=f.para==="USD"?"$":"₺";
+ const sinif=f.para==="USD"?"usd":"tl";
+ 
+ const trM=document.createElement("tr");
+ trM.className = `proj-kat-item ${katId}`;
+ trM.style.display = hasSearch ? '' : 'none'; // Arama varsa aç, yoksa kapat
+ trM.innerHTML=`
+ <td style="text-align:left">${f.ad}</td>
+ <td>
+  <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
+   <label class="toggle-switch" title="Ürünü aktif/pasif yap">
+    <input type="checkbox" ${isUrunAktif(f.ad) ? 'checked' : ''} onchange='toggleUrunAktif("${f.ad}")' data-urun="${f.ad}">
+    <span class="toggle-slider"></span>
+   </label>
+   <input type="number" value="${adet}" min="0" onchange='adetGuncelle("${f.ad}",this.value)' style="width:80px;">
+  </div>
+ </td>
+ <td>${enYuksek.toLocaleString('tr-TR')}</td>
+ <td>${kdvM.toLocaleString('tr-TR')}</td>
+ <td>${(enYuksek+kdvM).toLocaleString('tr-TR')}</td>
+ <td class="${sinif}">${paraSimge}</td>`;
+ tbodyM.appendChild(trM);
+ 
+ const trS=document.createElement("tr");
+ trS.className = `proj-kat-item ${katId}`;
+ trS.style.display = hasSearch ? '' : 'none'; // Arama varsa aç, yoksa kapat
+ trS.innerHTML=`
+ <td style="text-align:left">${f.ad}</td>
+ <td>
+  <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
+   <label class="toggle-switch" title="Ürünü aktif/pasif yap">
+    <input type="checkbox" ${isUrunAktif(f.ad) ? 'checked' : ''} onchange='toggleUrunAktif("${f.ad}")' data-urun="${f.ad}">
+    <span class="toggle-slider"></span>
+   </label>
+   <span>${adet}</span>
+  </div>
+ </td>
+ <td>${fiyatSatis.toLocaleString('tr-TR')}</td>
+ <td>${kdvS.toLocaleString('tr-TR')}</td>
+ <td>${(fiyatSatis+kdvS).toLocaleString('tr-TR')}</td>
+ <td class="${sinif}">${paraSimge}</td>`;
+ tbodyS.appendChild(trS);
+
+ if(f.para==="USD"){
+ DDY.USD_H+=adet*enYuksek;DDY.USD_K+=adet*kdvM;DDY.USD_D+=adet*(enYuksek+kdvM);
+ SUBE.USD_H+=adet*fiyatSatis;SUBE.USD_K+=adet*kdvS;SUBE.USD_D+=adet*(fiyatSatis+kdvS);
+ katMaliyetUSD_H+=adet*enYuksek;katMaliyetUSD_K+=adet*kdvM;katMaliyetUSD_D+=adet*(enYuksek+kdvM);
+ katSatisUSD_H+=adet*fiyatSatis;katSatisUSD_K+=adet*kdvS;katSatisUSD_D+=adet*(fiyatSatis+kdvS);
+ }else{
+ DDY.TL_H+=adet*enYuksek;DDY.TL_K+=adet*kdvM;DDY.TL_D+=adet*(enYuksek+kdvM);
+ SUBE.TL_H+=adet*fiyatSatis;SUBE.TL_K+=adet*kdvS;SUBE.TL_D+=adet*(fiyatSatis+kdvS);
+ katMaliyetTL_H+=adet*enYuksek;katMaliyetTL_K+=adet*kdvM;katMaliyetTL_D+=adet*(enYuksek+kdvM);
+ katSatisTL_H+=adet*fiyatSatis;katSatisTL_K+=adet*kdvS;katSatisTL_D+=adet*(fiyatSatis+kdvS);
+ }
+ });
+ 
+ // Kategori toplamları - Maliyet
+ const trTotalM = document.createElement("tr");
+ trTotalM.className = `proj-kat-item ${katId}`;
+ trTotalM.style.display = hasSearch ? '' : 'none';
+ trTotalM.style.background = "var(--bg-hover)";
+ trTotalM.style.fontWeight = "bold";
+ trTotalM.style.fontSize = "11px";
+ trTotalM.innerHTML = `
+ <td colspan="6" style="padding:8px 12px;">
+ <div style="text-align:left;">Toplamlar (${kategori})</div>
+ <div style="display:grid;grid-template-columns:auto auto auto;gap:4px 12px;margin-top:4px;font-size:10px;">
+ <div>TL KDV Hariç</div><div style="text-align:right;">${katMaliyetTL_H.toLocaleString('tr-TR',{minimumFractionDigits:2})}</div><div></div>
+ <div>TL KDV</div><div style="text-align:right;">${katMaliyetTL_K.toLocaleString('tr-TR',{minimumFractionDigits:2})}</div><div></div>
+ <div>TL KDV Dahil</div><div style="text-align:right;">${katMaliyetTL_D.toLocaleString('tr-TR',{minimumFractionDigits:2})}</div><div></div>
+ <div>USD KDV Hariç</div><div style="text-align:right;">${katMaliyetUSD_H.toLocaleString('tr-TR',{minimumFractionDigits:2})}</div><div></div>
+ <div>USD KDV</div><div style="text-align:right;">${katMaliyetUSD_K.toLocaleString('tr-TR',{minimumFractionDigits:2})}</div><div></div>
+ <div>USD KDV Dahil</div><div style="text-align:right;">${katMaliyetUSD_D.toLocaleString('tr-TR',{minimumFractionDigits:2})}</div><div></div>
+ </div>
+ </td>
+ `;
+ tbodyM.appendChild(trTotalM);
+ 
+ // Kategori toplamları - Satış
+ const trTotalS = document.createElement("tr");
+ trTotalS.className = `proj-kat-item ${katId}`;
+ trTotalS.style.display = hasSearch ? '' : 'none';
+ trTotalS.style.background = "var(--bg-hover)";
+ trTotalS.style.fontWeight = "bold";
+ trTotalS.style.fontSize = "11px";
+ trTotalS.innerHTML = `
+ <td colspan="6" style="padding:8px 12px;">
+ <div style="text-align:left;">Toplamlar (${kategori})</div>
+ <div style="display:grid;grid-template-columns:auto auto auto;gap:4px 12px;margin-top:4px;font-size:10px;">
+ <div>TL KDV Hariç</div><div style="text-align:right;">${katSatisTL_H.toLocaleString('tr-TR',{minimumFractionDigits:2})}</div><div></div>
+ <div>TL KDV</div><div style="text-align:right;">${katSatisTL_K.toLocaleString('tr-TR',{minimumFractionDigits:2})}</div><div></div>
+ <div>TL KDV Dahil</div><div style="text-align:right;">${katSatisTL_D.toLocaleString('tr-TR',{minimumFractionDigits:2})}</div><div></div>
+ <div>USD KDV Hariç</div><div style="text-align:right;">${katSatisUSD_H.toLocaleString('tr-TR',{minimumFractionDigits:2})}</div><div></div>
+ <div>USD KDV</div><div style="text-align:right;">${katSatisUSD_K.toLocaleString('tr-TR',{minimumFractionDigits:2})}</div><div></div>
+ <div>USD KDV Dahil</div><div style="text-align:right;">${katSatisUSD_D.toLocaleString('tr-TR',{minimumFractionDigits:2})}</div><div></div>
+ </div>
+ </td>
+ `;
+ tbodyS.appendChild(trTotalS);
+ });
+
+ const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=(v||0).toLocaleString('tr-TR');};
+ set("DDY_TL_H",DDY.TL_H);set("DDY_TL_KDV",DDY.TL_K);set("DDY_TL_D",DDY.TL_D);
+ set("DDY_USD_H",DDY.USD_H);set("DDY_USD_KDV",DDY.USD_K);set("DDY_USD_D",DDY.USD_D);
+ set("SUBE_TL_H",SUBE.TL_H);set("SUBE_TL_KDV",SUBE.TL_K);set("SUBE_TL_D",SUBE.TL_D);
+ set("SUBE_USD_H",SUBE.USD_H);set("SUBE_USD_KDV",SUBE.USD_K);set("SUBE_USD_D",SUBE.USD_D);
+ 
+ // Proje başlığına progress bar ekle
+ const projeData = {urunler: [], ad: aktifProje};
+ Object.keys(projeVeri).forEach(urunAd => {
+   if (urunAd !== 'karOranlari' && urunAd !== 'ozelUrunler') {
+     projeData.urunler.push({ad: urunAd, adet: projeVeri[urunAd] || 0});
+   }
+ });
+ const projeProgress = hesaplaProgress(projeData);
+ const projeBaslikEl = document.getElementById('projeBaslik');
+ if (projeBaslikEl) {
+   projeBaslikEl.innerHTML = `Proje: ${aktifProje} ${progressBarHTML(projeProgress, true)}`;
+ }
+ 
+ // Dashboard'u güncelle
+ renderDashboard();
+}
+
+function toggleProjeKategori(katId) {
+ const items = document.querySelectorAll(`.proj-kat-item.${katId}`);
+ const chevrons = document.querySelectorAll(`[data-proj-kat="${katId}"]`);
+ 
+ const isHidden = items[0] && items[0].style.display === 'none';
+ 
+ items.forEach(item => {
+ item.style.display = isHidden ? '' : 'none';
+ });
+ 
+ chevrons.forEach(chevron => {
+ chevron.textContent = isHidden ? '▼' : '▶';
+ });
+}
+
+function exportKategoriToExcel(kategori, tip) {
+ if (typeof XLSX === 'undefined') {
+ showUyari('Excel kütüphanesi yüklenemedi. Sayfayı yenileyin.', 'danger');
+ return;
+ }
+ 
+ const fiyatlarTum = [...products];
+ const projeOzel = (projeler[aktifProje] && projeler[aktifProje].ozelUrunler) || [];
+ fiyatlarTum.push(...projeOzel);
+ 
+ const projeVeri = projeler[aktifProje] || {};
+ 
+ // Kategoriye ait ürünleri filtrele
+ const kategoriUrunler = fiyatlarTum.filter(f => (f.kategori || "Diğer") === kategori);
+ 
+ // Excel verisi hazırla
+ const excelData = [];
+ 
+ // Başlık - Büyük
+ const baslikTip = tip === 'maliyet' ? 'DDY MALIYETI' : 'SUBE MALIYETI';
+ excelData.push([`${baslikTip}`]);
+ excelData.push([`URUN ADI: ${kategori.toUpperCase()}`]);
+ excelData.push([]); // Boş satır
+ 
+ // Kolon başlıkları
+ excelData.push(['', 'URUN ADI', 'ADET', 'BIRIM FIYAT', 'KDV', 'TOPLAM FIYAT', 'PARA BIRIMI']);
+ 
+ let toplamTL_H = 0, toplamTL_K = 0, toplamTL_D = 0;
+ let toplamUSD_H = 0, toplamUSD_K = 0, toplamUSD_D = 0;
+ let satirNo = 1;
+ 
+ // TL ürünler
+ const tlUrunler = kategoriUrunler.filter(f => f.para !== "USD");
+ tlUrunler.forEach(f => {
+ const adet = Number(projeVeri[f.ad] || 0);
+ let fiyatListesi = [];
+ if (Array.isArray(f.teklifler) && f.teklifler.length) {
+ fiyatListesi = f.teklifler.map(t => Number(t.fiyat) || 0);
+ }
+ let birimFiyat = fiyatListesi.length ? Math.max(...fiyatListesi) : 0;
+ 
+ if (tip === 'satis') {
+ const karOrani = getKarOrani(f.kategori);
+ birimFiyat = birimFiyat * (1 + karOrani);
+ }
+ 
+ const kdvOrani = f.kategori === "Mobilya" ? KDV_MOBILYA : KDV_DIGER;
+ const kdvTutar = birimFiyat * kdvOrani;
+ const toplamFiyat = birimFiyat + kdvTutar;
+ 
+ excelData.push([
+ satirNo,
+ f.ad.toUpperCase(),
+ adet,
+ birimFiyat.toFixed(2),
+ kdvTutar.toFixed(2),
+ toplamFiyat.toFixed(2),
+ '₺'
+ ]);
+ 
+ toplamTL_H += adet * birimFiyat;
+ toplamTL_K += adet * kdvTutar;
+ toplamTL_D += adet * toplamFiyat;
+ satirNo++;
+ });
+ 
+ // USD ürünler
+ const usdUrunler = kategoriUrunler.filter(f => f.para === "USD");
+ usdUrunler.forEach(f => {
+ const adet = Number(projeVeri[f.ad] || 0);
+ let fiyatListesi = [];
+ if (Array.isArray(f.teklifler) && f.teklifler.length) {
+ fiyatListesi = f.teklifler.map(t => Number(t.fiyat) || 0);
+ }
+ let birimFiyat = fiyatListesi.length ? Math.max(...fiyatListesi) : 0;
+ 
+ if (tip === 'satis') {
+ const karOrani = getKarOrani(f.kategori);
+ birimFiyat = birimFiyat * (1 + karOrani);
+ }
+ 
+ const kdvOrani = f.kategori === "Mobilya" ? KDV_MOBILYA : KDV_DIGER;
+ const kdvTutar = birimFiyat * kdvOrani;
+ const toplamFiyat = birimFiyat + kdvTutar;
+ 
+ excelData.push([
+ satirNo,
+ f.ad.toUpperCase(),
+ adet,
+ birimFiyat.toFixed(2),
+ kdvTutar.toFixed(2),
+ toplamFiyat.toFixed(2),
+ '$'
+ ]);
+ 
+ toplamUSD_H += adet * birimFiyat;
+ toplamUSD_K += adet * kdvTutar;
+ toplamUSD_D += adet * toplamFiyat;
+ satirNo++;
+ });
+ 
+ // Toplam satırları
+ excelData.push([]);
+ 
+ if (tlUrunler.length > 0) {
+ const kdvOraniTL = kategori === "Mobilya" ? KDV_MOBILYA : KDV_DIGER;
+ excelData.push(['', '', '', '', 'KDV HARİÇ TOPLAM FİYAT TL', toplamTL_H.toFixed(2), '₺']);
+ excelData.push(['', '', '', '', `KDV %${(kdvOraniTL * 100).toFixed(0)}`, toplamTL_K.toFixed(2), '₺']);
+ excelData.push(['', '', '', '', 'KDV DAHİL TOPLAM TUTAR', toplamTL_D.toFixed(2), '₺']);
+ excelData.push([]);
+ }
+ 
+ if (usdUrunler.length > 0) {
+ const kdvOraniUSD = kategori === "Mobilya" ? KDV_MOBILYA : KDV_DIGER;
+ excelData.push(['', '', '', '', 'KDV HARİÇ TOPLAM FİYAT USD', toplamUSD_H.toFixed(2), '$']);
+ excelData.push(['', '', '', '', `KDV %${(kdvOraniUSD * 100).toFixed(0)}`, toplamUSD_K.toFixed(2), '$']);
+ excelData.push(['', '', '', '', 'KDV DAHİL TOPLAM TUTAR', toplamUSD_D.toFixed(2), '$']);
+ }
+ 
+ // Excel dosyası oluştur
+ const ws = XLSX.utils.aoa_to_sheet(excelData);
+  
+  // Başlık satırını formatla (Logo metni)
+  if (!ws['!rows']) ws['!rows'] = [];
+  ws['!rows'][0] = { hpt: 20 }; // Yükseklik
+  if (ws['A1']) {
+    ws['A1'].s = {
+      font: { bold: true, sz: 14, color: { rgb: 'C00000' } },
+      alignment: { horizontal: 'center', vertical: 'center' }
+    };
+  }
+  
+  // Sütun genişliklerini ayarla
+  ws['!cols'] = [
+    { wch: 5 },   // NO
+    { wch: 40 },  // URUN ADI
+    { wch: 8 },   // ADET
+    { wch: 15 },  // BIRIM FIYAT
+    { wch: 15 },  // KDV
+    { wch: 15 },  // TOPLAM FIYAT
+    { wch: 10 }   // PARA BIRIMI
+  ];
+  
+  // Başlık satırını formatla (Logo metni)
+  if (!ws['!rows']) ws['!rows'] = [];
+  ws['!rows'][0] = { hpt: 20 }; // Yükseklik
+  if (ws['A1']) {
+    ws['A1'].s = {
+      font: { bold: true, sz: 14, color: { rgb: 'C00000' } },
+      alignment: { horizontal: 'center', vertical: 'center' }
+    };
+  }
+  
+  // Sütun genişliklerini ayarla
+  ws['!cols'] = [
+    { wch: 5 },   // NO
+    { wch: 40 },  // URUN ADI
+    { wch: 8 },   // ADET
+    { wch: 15 },  // BIRIM FIYAT
+    { wch: 15 },  // KDV
+    { wch: 15 },  // TOPLAM FIYAT
+    { wch: 10 }   // PARA BIRIMI
+  ];
+ 
+ // Sütun genişlikleri ayarla
+ ws['!cols'] = [
+ {wch: 5}, // Sıra no
+ {wch: 50}, // Ürün adı
+ {wch: 8}, // Adet
+ {wch: 15}, // Birim fiyat
+ {wch: 15}, // KDV
+ {wch: 18}, // Toplam fiyat
+ {wch: 8} // Para birimi
+ ];
+ 
+ const wb = XLSX.utils.book_new();
+ XLSX.utils.book_append_sheet(wb, ws, kategori);
+ 
+ // Dosya adı
+ const tipAdi = tip === 'maliyet' ? 'DDY_Maliyet' : 'Sube_Maliyet';
+ const tarih = new Date().toLocaleDateString('tr-TR').replace(/\./g, '_');
+ const fileName = `${aktifProje}_${kategori}_${tipAdi}_${tarih}.xlsx`;
+ 
+ // İndir
+ XLSX.writeFile(wb, fileName);
+ 
+ showUyari(`${kategori} kategorisi Excel'e aktarıldı!`, "success");
+}
+
+function exportKategoriToPDF(kategori, tip) {
+  const { jsPDF } = window.jspdf;
+  
+  if (!jsPDF) {
+    showUyari('PDF kütüphanesi yüklenemedi. Sayfayı yenileyin.', 'danger');
+    return;
+  }
+  
+  // Türkçe karakterleri Latin harflere çevir
+  const toLatin = (text) => {
+    if (!text) return '';
+    return String(text)
+      .replace(/Ğ/g, 'G').replace(/ğ/g, 'g')
+      .replace(/Ü/g, 'U').replace(/ü/g, 'u')
+      .replace(/Ş/g, 'S').replace(/ş/g, 's')
+      .replace(/İ/g, 'I').replace(/ı/g, 'i').replace(/I/g, 'I')
+      .replace(/Ö/g, 'O').replace(/ö/g, 'o')
+      .replace(/Ç/g, 'C').replace(/ç/g, 'c');
+  };
+  
+  const fiyatlarTum = [...products];
+  const projeOzel = (projeler[aktifProje] && projeler[aktifProje].ozelUrunler) || [];
+  fiyatlarTum.push(...projeOzel);
+  
+  const projeVeri = projeler[aktifProje] || {};
+  
+  // Kategoriye ait ürünleri filtrele
+  const kategoriUrunler = fiyatlarTum.filter(f => (f.kategori || "Diğer") === kategori);
+  
+  // PDF oluştur
+  const doc = new jsPDF();
+  
+  // LOGOLAR EKLE (Antetli kağıt)
+  try {
+    doc.addImage(DDY_LOGO_BASE64, 'PNG', 14, 10, 34, 12);
+    doc.addImage(ARABICA_LOGO_BASE64, 'PNG', 160, 10, 16, 12);
+  } catch (e) {
+    console.error('Logo eklenirken hata:', e);
+  }
+  
+  // ANTETLI KAĞIT ALANI (Üst 30mm boş bırakılıyor)
+  let currentY = 35;
+  
+  // Başlık
+  const baslikTip = tip === 'maliyet' ? 'DDY MALIYETI' : 'SUBE MALIYETI';
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.text(baslikTip, 105, currentY, { align: 'center' });
+  currentY += 7;
+  
+  // Alt başlık bilgileri
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Proje: ' + toLatin(aktifProje), 14, currentY);
+  doc.text('Tarih: ' + new Date().toLocaleDateString('tr-TR'), 196, currentY, { align: 'right' });
+  currentY += 8;
+  
+  let toplamTL_H = 0, toplamTL_K = 0, toplamTL_D = 0;
+  let toplamUSD_H = 0, toplamUSD_K = 0, toplamUSD_D = 0;
+  
+  const tableData = [];
+  let satirNo = 1;
+  
+  // TL ürünler
+  const tlUrunler = kategoriUrunler.filter(f => f.para !== "USD");
+  tlUrunler.forEach(f => {
+    const adet = Number(projeVeri[f.ad] || 0);
+    let fiyatListesi = [];
+    if (Array.isArray(f.teklifler) && f.teklifler.length) {
+      fiyatListesi = f.teklifler.map(t => Number(t.fiyat) || 0);
+    }
+    let birimFiyat = fiyatListesi.length ? Math.max(...fiyatListesi) : 0;
+    
+    if (tip === 'satis') {
+      const karOrani = getKarOrani(f.kategori);
+      birimFiyat = birimFiyat * (1 + karOrani);
+    }
+    
+    const kdvOrani = f.kategori === "Mobilya" ? KDV_MOBILYA : KDV_DIGER;
+    const kdvTutar = birimFiyat * kdvOrani;
+    const toplamFiyat = birimFiyat + kdvTutar;
+    
+    tableData.push([
+      satirNo++,
+      toLatin(f.ad),
+      adet,
+      birimFiyat.toFixed(2) + ' TL',
+      kdvTutar.toFixed(2) + ' TL',
+      toplamFiyat.toFixed(2) + ' TL'
+    ]);
+    
+    toplamTL_H += adet * birimFiyat;
+    toplamTL_K += adet * kdvTutar;
+    toplamTL_D += adet * toplamFiyat;
+  });
+  
+  // USD ürünler
+  const usdUrunler = kategoriUrunler.filter(f => f.para === "USD");
+  usdUrunler.forEach(f => {
+    const adet = Number(projeVeri[f.ad] || 0);
+    let fiyatListesi = [];
+    if (Array.isArray(f.teklifler) && f.teklifler.length) {
+      fiyatListesi = f.teklifler.map(t => Number(t.fiyat) || 0);
+    }
+    let birimFiyat = fiyatListesi.length ? Math.max(...fiyatListesi) : 0;
+    
+    if (tip === 'satis') {
+      const karOrani = getKarOrani(f.kategori);
+      birimFiyat = birimFiyat * (1 + karOrani);
+    }
+    
+    const kdvOrani = f.kategori === "Mobilya" ? KDV_MOBILYA : KDV_DIGER;
+    const kdvTutar = birimFiyat * kdvOrani;
+    const toplamFiyat = birimFiyat + kdvTutar;
+    
+    tableData.push([
+      satirNo++,
+      toLatin(f.ad),
+      adet,
+      birimFiyat.toFixed(2) + ' USD',
+      kdvTutar.toFixed(2) + ' USD',
+      toplamFiyat.toFixed(2) + ' USD'
+    ]);
+    
+    toplamUSD_H += adet * birimFiyat;
+    toplamUSD_K += adet * kdvTutar;
+    toplamUSD_D += adet * toplamFiyat;
+  });
+  
+  // Ana tablo
+  doc.autoTable({
+    startY: currentY,
+    head: [['NO', 'URUN ADI', 'ADET', 'BIRIM FIYAT', 'KDV', 'TOPLAM FIYAT']],
+    body: tableData,
+    theme: 'grid',
+    margin: { left: 14 },
+    styles: { 
+      font: 'helvetica',
+      fontSize: 7,
+      cellPadding: 1.5,
+      lineColor: [0, 0, 0],
+      lineWidth: 0.1,
+      overflow: 'linebreak',
+      cellWidth: 'wrap'
+    },
+    headStyles: { 
+      fillColor: [255, 255, 255],
+      textColor: [0, 0, 0],
+      fontStyle: 'bold',
+      fontSize: 8,
+      halign: 'center'
+    },
+    columnStyles: {
+      0: { cellWidth: 10, halign: 'center' },
+      1: { cellWidth: 75, overflow: 'linebreak' },
+      2: { cellWidth: 15, halign: 'center' },
+      3: { cellWidth: 27, halign: 'right' },
+      4: { cellWidth: 27, halign: 'right' },
+      5: { cellWidth: 28, halign: 'right' }
+    },
+    didParseCell: function(data) {
+      data.cell.styles.lineWidth = 0.1;
+      data.cell.styles.lineColor = [0, 0, 0];
+    }
+  });
+  
+  // TOPLAMLAR - Tarih ile TAM hizalı (170'te)
+  let finalY = doc.lastAutoTable.finalY + 5;
+  
+  const summaryData = [];
+  
+  // TL toplamlarını her zaman göster
+  summaryData.push(['TL KDV Haric', toplamTL_H.toLocaleString('tr-TR', {minimumFractionDigits: 2})]);
+  summaryData.push(['TL KDV', toplamTL_K.toLocaleString('tr-TR', {minimumFractionDigits: 2})]);
+  summaryData.push(['TL KDV Dahil', toplamTL_D.toLocaleString('tr-TR', {minimumFractionDigits: 2})]);
+  
+  // USD toplamlarını her zaman göster
+  summaryData.push(['USD KDV Haric', toplamUSD_H.toLocaleString('tr-TR', {minimumFractionDigits: 2})]);
+  summaryData.push(['USD KDV', toplamUSD_K.toLocaleString('tr-TR', {minimumFractionDigits: 2})]);
+  summaryData.push(['USD KDV Dahil', toplamUSD_D.toLocaleString('tr-TR', {minimumFractionDigits: 2})]);
+  
+  // Başlık - Tarih'in olduğu yerde (196)
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Toplamlar (' + toLatin(kategori) + ')', 196, finalY, { align: 'right' });
+  finalY += 5;
+  
+  // Toplamlar tablosu - Tarih hizasında (140)
+  doc.autoTable({
+    startY: finalY,
+    body: summaryData,
+    theme: 'plain',
+    margin: { left: 140 },
+    tableWidth: 'wrap',
+    styles: {
+      font: 'helvetica',
+      fontSize: 9,
+      cellPadding: 2
+    },
+    columnStyles: {
+      0: { 
+        cellWidth: 33,
+        halign: 'left',
+        fontStyle: 'bold'
+      },
+      1: { 
+        cellWidth: 23, 
+        halign: 'right',
+        fontStyle: 'normal'
+      }
+    },
+    didParseCell: function(data) {
+      if (data.row.raw && data.row.raw[0] && data.row.raw[0].includes('Dahil')) {
+        data.cell.styles.fontSize = 10;
+        data.cell.styles.fontStyle = 'bold';
+      }
+    }
+  });
+  
+  // PDF'i indir
+  const tarih = new Date().toISOString().split('T')[0];
+  const fileName = toLatin(aktifProje) + '_' + toLatin(kategori) + '_' + tip + '_' + tarih + '.pdf';
+  doc.save(fileName);
+  
+  showUyari(kategori + ' kategorisi PDF olarak indirildi!', "success");
+}
+
+function exportAllToPDF(tip) {
+  const { jsPDF } = window.jspdf;
+  
+  if (!jsPDF) {
+    showUyari('PDF kütüphanesi yüklenemedi. Sayfayı yenileyin.', 'danger');
+    return;
+  }
+  
+  // Türkçe karakterleri Latin harflere çevir
+  const toLatin = (text) => {
+    if (!text) return '';
+    return String(text)
+      .replace(/Ğ/g, 'G').replace(/ğ/g, 'g')
+      .replace(/Ü/g, 'U').replace(/ü/g, 'u')
+      .replace(/Ş/g, 'S').replace(/ş/g, 's')
+      .replace(/İ/g, 'I').replace(/ı/g, 'i').replace(/I/g, 'I')
+      .replace(/Ö/g, 'O').replace(/ö/g, 'o')
+      .replace(/Ç/g, 'C').replace(/ç/g, 'c');
+  };
+  
+  const fiyatlarTum = [...products];
+  const projeOzel = (projeler[aktifProje] && projeler[aktifProje].ozelUrunler) || [];
+  fiyatlarTum.push(...projeOzel);
+  
+  const projeVeri = projeler[aktifProje] || {};
+  
+  // PDF oluştur
+  const doc = new jsPDF();
+  
+  // Başlık
+  const baslikTip = tip === 'maliyet' ? 'DDY MALIYETI - TUM KATEGORILER' : 'SUBE MALIYETI - TUM KATEGORILER';
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.text(baslikTip, 105, 35, { align: 'center' });
+  
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Proje: ' + toLatin(aktifProje), 14, 42);
+  doc.text('Tarih: ' + new Date().toLocaleDateString('tr-TR'), 196, 42, { align: 'right' });
+  
+  let currentY = 48;
+  
+  // Tüm kategorileri grupla
+  const kategoriler = {};
+  fiyatlarTum.forEach(f => {
+    const kat = f.kategori || "Diğer";
+    if (!kategoriler[kat]) kategoriler[kat] = [];
+    kategoriler[kat].push(f);
+  });
+  
+  let genelToplamTL_H = 0, genelToplamTL_K = 0, genelToplamTL_D = 0;
+  let genelToplamUSD_H = 0, genelToplamUSD_K = 0, genelToplamUSD_D = 0;
+  
+  // Her kategori için
+  Object.keys(kategoriler).sort().forEach((kategori, katIndex) => {
+    const kategoriUrunler = kategoriler[kategori];
+    
+    let toplamTL_H = 0, toplamTL_K = 0, toplamTL_D = 0;
+    let toplamUSD_H = 0, toplamUSD_K = 0, toplamUSD_D = 0;
+    
+    const tableData = [];
+    let satirNo = 1;
+    
+    // TL ürünler
+    const tlUrunler = kategoriUrunler.filter(f => f.para !== "USD");
+    tlUrunler.forEach(f => {
+      const adet = Number(projeVeri[f.ad] || 0);
+      let fiyatListesi = [];
+      if (Array.isArray(f.teklifler) && f.teklifler.length) {
+        fiyatListesi = f.teklifler.map(t => Number(t.fiyat) || 0);
+      }
+      let birimFiyat = fiyatListesi.length ? Math.max(...fiyatListesi) : 0;
+      
+      if (tip === 'satis') {
+        const karOrani = getKarOrani(f.kategori);
+        birimFiyat = birimFiyat * (1 + karOrani);
+      }
+      
+      const kdvOrani = f.kategori === "Mobilya" ? KDV_MOBILYA : KDV_DIGER;
+      const kdvTutar = birimFiyat * kdvOrani;
+      const toplamFiyat = birimFiyat + kdvTutar;
+      
+      tableData.push([
+        satirNo++,
+        toLatin(f.ad),
+        adet,
+        birimFiyat.toFixed(2) + ' TL',
+        kdvTutar.toFixed(2) + ' TL',
+        toplamFiyat.toFixed(2) + ' TL'
+      ]);
+      
+      toplamTL_H += adet * birimFiyat;
+      toplamTL_K += adet * kdvTutar;
+      toplamTL_D += adet * toplamFiyat;
+    });
+    
+    // USD ürünler
+    const usdUrunler = kategoriUrunler.filter(f => f.para === "USD");
+    usdUrunler.forEach(f => {
+      const adet = Number(projeVeri[f.ad] || 0);
+      let fiyatListesi = [];
+      if (Array.isArray(f.teklifler) && f.teklifler.length) {
+        fiyatListesi = f.teklifler.map(t => Number(t.fiyat) || 0);
+      }
+      let birimFiyat = fiyatListesi.length ? Math.max(...fiyatListesi) : 0;
+      
+      if (tip === 'satis') {
+        const karOrani = getKarOrani(f.kategori);
+        birimFiyat = birimFiyat * (1 + karOrani);
+      }
+      
+      const kdvOrani = f.kategori === "Mobilya" ? KDV_MOBILYA : KDV_DIGER;
+      const kdvTutar = birimFiyat * kdvOrani;
+      const toplamFiyat = birimFiyat + kdvTutar;
+      
+      tableData.push([
+        satirNo++,
+        toLatin(f.ad),
+        adet,
+        birimFiyat.toFixed(2) + ' USD',
+        kdvTutar.toFixed(2) + ' USD',
+        toplamFiyat.toFixed(2) + ' USD'
+      ]);
+      
+      toplamUSD_H += adet * birimFiyat;
+      toplamUSD_K += adet * kdvTutar;
+      toplamUSD_D += adet * toplamFiyat;
+    });
+    
+    // Kategori başlığı
+    if (katIndex > 0 && currentY > 250) {
+      doc.addPage();
+      currentY = 20;
+    }
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text(toLatin(kategori), 14, currentY);
+    currentY += 5;
+    
+    // Kategori tablosu
+    doc.autoTable({
+      startY: currentY,
+      head: [['NO', 'URUN ADI', 'ADET', 'BIRIM FIYAT', 'KDV', 'TOPLAM FİYAT']],
+      body: tableData,
+      theme: 'grid',
+      margin: { left: 14 },
+      styles: { 
+        font: 'helvetica',
+        fontSize: 6,
+        cellPadding: 1,
+        lineColor: [0, 0, 0],
+        lineWidth: 0.1,
+        overflow: 'linebreak'
+      },
+      headStyles: { 
+        fillColor: [240, 240, 240],
+        textColor: [0, 0, 0],
+        fontStyle: 'bold',
+        fontSize: 7,
+        halign: 'center'
+      },
+      columnStyles: {
+        0: { cellWidth: 10, halign: 'center' },
+        1: { cellWidth: 75, overflow: 'linebreak' },
+        2: { cellWidth: 15, halign: 'center' },
+        3: { cellWidth: 27, halign: 'right' },
+        4: { cellWidth: 27, halign: 'right' },
+        5: { cellWidth: 28, halign: 'right' }
+      }
+    });
+    
+    currentY = doc.lastAutoTable.finalY + 3;
+    
+    // Kategori toplamları - Tarih ile TAM hizalı (196)
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Toplamlar (' + toLatin(kategori) + ')', 196, currentY, { align: 'right' });
+    currentY += 3;
+    
+    const katSummary = [];
+    katSummary.push(['TL KDV Haric', toplamTL_H.toLocaleString('tr-TR', {minimumFractionDigits: 2})]);
+    katSummary.push(['TL KDV', toplamTL_K.toLocaleString('tr-TR', {minimumFractionDigits: 2})]);
+    katSummary.push(['TL KDV Dahil', toplamTL_D.toLocaleString('tr-TR', {minimumFractionDigits: 2})]);
+    katSummary.push(['USD KDV Haric', toplamUSD_H.toLocaleString('tr-TR', {minimumFractionDigits: 2})]);
+    katSummary.push(['USD KDV', toplamUSD_K.toLocaleString('tr-TR', {minimumFractionDigits: 2})]);
+    katSummary.push(['USD KDV Dahil', toplamUSD_D.toLocaleString('tr-TR', {minimumFractionDigits: 2})]);
+    
+    doc.autoTable({
+      startY: currentY,
+      body: katSummary,
+      theme: 'plain',
+      margin: { left: 140 },
+      tableWidth: 'wrap',
+      styles: { fontSize: 8, cellPadding: 1.5 },
+      columnStyles: {
+        0: { cellWidth: 33, halign: 'left', fontStyle: 'bold' },
+        1: { cellWidth: 23, halign: 'right' }
+      },
+      didParseCell: function(data) {
+        if (data.row.raw && data.row.raw[0] && data.row.raw[0].includes('Dahil')) {
+          data.cell.styles.fontSize = 9;
+          data.cell.styles.fontStyle = 'bold';
+        }
+      }
+    });
+    currentY = doc.lastAutoTable.finalY + 5;
+    
+    // Genel toplama ekle
+    genelToplamTL_H += toplamTL_H;
+    genelToplamTL_K += toplamTL_K;
+    genelToplamTL_D += toplamTL_D;
+    genelToplamUSD_H += toplamUSD_H;
+    genelToplamUSD_K += toplamUSD_K;
+    genelToplamUSD_D += toplamUSD_D;
+  });
+  
+  // GENEL TOPLAM (en altta) - Tarih ile TAM hizalı (196)
+  if (currentY > 250) {
+    doc.addPage();
+    currentY = 20;
+  }
+  
+  currentY += 5;
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.text('GENEL TOPLAM', 196, currentY, { align: 'right' });
+  currentY += 5;
+  
+  const genelSummary = [];
+  genelSummary.push(['TL KDV Haric', genelToplamTL_H.toLocaleString('tr-TR', {minimumFractionDigits: 2})]);
+  genelSummary.push(['TL KDV', genelToplamTL_K.toLocaleString('tr-TR', {minimumFractionDigits: 2})]);
+  genelSummary.push(['TL KDV Dahil', genelToplamTL_D.toLocaleString('tr-TR', {minimumFractionDigits: 2})]);
+  genelSummary.push(['USD KDV Haric', genelToplamUSD_H.toLocaleString('tr-TR', {minimumFractionDigits: 2})]);
+  genelSummary.push(['USD KDV', genelToplamUSD_K.toLocaleString('tr-TR', {minimumFractionDigits: 2})]);
+  genelSummary.push(['USD KDV Dahil', genelToplamUSD_D.toLocaleString('tr-TR', {minimumFractionDigits: 2})]);
+  
+  doc.autoTable({
+    startY: currentY,
+    body: genelSummary,
+    theme: 'plain',
+    margin: { left: 140 },
+    tableWidth: 'wrap',
+    styles: {
+      fontSize: 10,
+      cellPadding: 2
+    },
+    columnStyles: {
+      0: { cellWidth: 33, halign: 'left', fontStyle: 'bold' },
+      1: { cellWidth: 23, halign: 'right', fontStyle: 'bold' }
+    },
+    didParseCell: function(data) {
+      if (data.row.raw && data.row.raw[0] && data.row.raw[0].includes('Dahil')) {
+        data.cell.styles.fontSize = 11;
+      }
+    }
+  });
+  
+  // PDF'i indir
+  const tarih = new Date().toISOString().split('T')[0];
+  const fileName = toLatin(aktifProje) + '_TumKategoriler_' + tip + '_' + tarih + '.pdf';
+  doc.save(fileName);
+  
+  showUyari('Tum kategoriler PDF olarak indirildi!', "success");
+}
+
+// === WORD EXPORT FONKSIYONLARI ===
+async function exportKategoriToWord(kategori, tip) {
+  if (!window.docx) {
+    showUyari('Word kütüphanesi yüklenemedi. Sayfayı yenileyin.', 'danger');
+    return;
+  }
+  
+  const { Document, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, WidthType, AlignmentType, BorderStyle, Packer } = docx;
+  
+  const toLatin = (text) => {
+    if (!text) return '';
+    return String(text)
+      .replace(/Ğ/g, 'G').replace(/ğ/g, 'g')
+      .replace(/Ü/g, 'U').replace(/ü/g, 'u')
+      .replace(/Ş/g, 'S').replace(/ş/g, 's')
+      .replace(/İ/g, 'I').replace(/ı/g, 'i')
+      .replace(/Ö/g, 'O').replace(/ö/g, 'o')
+      .replace(/Ç/g, 'C').replace(/ç/g, 'c');
+  };
+  
+  const fiyatlarTum = [...products];
+  const projeOzel = (projeler[aktifProje] && projeler[aktifProje].ozelUrunler) || [];
+  fiyatlarTum.push(...projeOzel);
+  const projeVeri = projeler[aktifProje] || {};
+  const kategoriUrunler = fiyatlarTum.filter(f => (f.kategori || "Diğer") === kategori);
+  
+  let toplamTL_H = 0, toplamTL_K = 0, toplamTL_D = 0;
+  let toplamUSD_H = 0, toplamUSD_K = 0, toplamUSD_D = 0;
+  
+  const tableData = [];
+  let satirNo = 1;
+  
+  // TL ürünler
+  kategoriUrunler.filter(f => f.para !== "USD").forEach(f => {
+    const adet = Number(projeVeri[f.ad] || 0);
+    let fiyatListesi = (Array.isArray(f.teklifler) && f.teklifler.length) ? 
+      f.teklifler.map(t => Number(t.fiyat) || 0) : [];
+    let birimFiyat = fiyatListesi.length ? Math.max(...fiyatListesi) : 0;
+    
+    if (tip === 'satis') {
+      const karOrani = getKarOrani(f.kategori);
+      birimFiyat = birimFiyat * (1 + karOrani);
+    }
+    
+    const kdvOrani = f.kategori === "Mobilya" ? KDV_MOBILYA : KDV_DIGER;
+    const kdvTutar = birimFiyat * kdvOrani;
+    const toplamFiyat = birimFiyat + kdvTutar;
+    
+    tableData.push([
+      satirNo++,
+      toLatin(f.ad),
+      adet,
+      birimFiyat.toFixed(2) + ' TL',
+      kdvTutar.toFixed(2) + ' TL',
+      toplamFiyat.toFixed(2) + ' TL'
+    ]);
+    
+    toplamTL_H += adet * birimFiyat;
+    toplamTL_K += adet * kdvTutar;
+    toplamTL_D += adet * toplamFiyat;
+  });
+  
+  // USD ürünler
+  kategoriUrunler.filter(f => f.para === "USD").forEach(f => {
+    const adet = Number(projeVeri[f.ad] || 0);
+    let fiyatListesi = (Array.isArray(f.teklifler) && f.teklifler.length) ? 
+      f.teklifler.map(t => Number(t.fiyat) || 0) : [];
+    let birimFiyat = fiyatListesi.length ? Math.max(...fiyatListesi) : 0;
+    
+    if (tip === 'satis') {
+      const karOrani = getKarOrani(f.kategori);
+      birimFiyat = birimFiyat * (1 + karOrani);
+    }
+    
+    const kdvOrani = f.kategori === "Mobilya" ? KDV_MOBILYA : KDV_DIGER;
+    const kdvTutar = birimFiyat * kdvOrani;
+    const toplamFiyat = birimFiyat + kdvTutar;
+    
+    tableData.push([
+      satirNo++,
+      toLatin(f.ad),
+      adet,
+      birimFiyat.toFixed(2) + ' USD',
+      kdvTutar.toFixed(2) + ' USD',
+      toplamFiyat.toFixed(2) + ' USD'
+    ]);
+    
+    toplamUSD_H += adet * birimFiyat;
+    toplamUSD_K += adet * kdvTutar;
+    toplamUSD_D += adet * toplamFiyat;
+  });
+  
+  // Word belgesi oluştur
+  const baslikTip = tip === 'maliyet' ? 'DDY MALIYETI' : 'SUBE MALIYETI';
+  
+  const tableRows = [
+    new TableRow({
+      children: [
+        new TableCell({ children: [new Paragraph({ text: 'NO', alignment: AlignmentType.CENTER, color: '000000' })], width: { size: 5, type: WidthType.PERCENTAGE } }),
+        new TableCell({ children: [new Paragraph({ text: 'URUN ADI', alignment: AlignmentType.CENTER, color: '000000' })], width: { size: 40, type: WidthType.PERCENTAGE } }),
+        new TableCell({ children: [new Paragraph({ text: 'ADET', alignment: AlignmentType.CENTER, color: '000000' })], width: { size: 10, type: WidthType.PERCENTAGE } }),
+        new TableCell({ children: [new Paragraph({ text: 'BIRIM FIYAT', alignment: AlignmentType.CENTER, color: '000000' })], width: { size: 15, type: WidthType.PERCENTAGE } }),
+        new TableCell({ children: [new Paragraph({ text: 'KDV', alignment: AlignmentType.CENTER, color: '000000' })], width: { size: 15, type: WidthType.PERCENTAGE } }),
+        new TableCell({ children: [new Paragraph({ text: 'TOPLAM FIYAT', alignment: AlignmentType.CENTER, color: '000000' })], width: { size: 15, type: WidthType.PERCENTAGE } })
+      ]
+    })
+  ];
+  
+  tableData.forEach(row => {
+    tableRows.push(new TableRow({
+      children: row.map((cell, idx) => new TableCell({ 
+        children: [new Paragraph({ text: String(cell), alignment: idx === 0 || idx === 2 ? AlignmentType.CENTER : (idx === 1 ? AlignmentType.LEFT : AlignmentType.RIGHT)
+       , color: '000000' })]
+      }))
+    }));
+  });
+  
+  const doc = new Document({
+    sections: [{
+      children: [
+        // Logolar
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [
+            new ImageRun({
+          data: Uint8Array.from(atob(DDY_LOGO_BASE64.split(',')[1]), c => c.charCodeAt(0)),
+          transformation: { width: 128, height: 45 }
+            }),
+            new TextRun({ text: "     " }),
+            new ImageRun({
+          data: Uint8Array.from(atob(ARABICA_LOGO_BASE64.split(',')[1]), c => c.charCodeAt(0)),
+          transformation: { width: 61, height: 45 }
+            })
+          ]
+        }),
+        new Paragraph({ text: '' }),
+        new Paragraph({ text: baslikTip, heading: 'Heading1', alignment: AlignmentType.CENTER }),
+        new Paragraph({ text: 'Proje: ' + toLatin(aktifProje) }),
+        new Paragraph({ text: 'Tarih: ' + new Date().toLocaleDateString('tr-TR') }),
+        new Paragraph({ text: '' }),
+        new Table({ rows: tableRows, width: { size: 100, type: WidthType.PERCENTAGE } }),
+        new Paragraph({ text: '' }),
+        new Paragraph({ text: 'Toplamlar (' + toLatin(kategori) + ')', bold: true }),
+        new Paragraph({ text: 'TL KDV Haric: ' + toplamTL_H.toLocaleString('tr-TR', {minimumFractionDigits: 2}) }),
+        new Paragraph({ text: 'TL KDV: ' + toplamTL_K.toLocaleString('tr-TR', {minimumFractionDigits: 2}) }),
+        new Paragraph({ text: 'TL KDV Dahil: ' + toplamTL_D.toLocaleString('tr-TR', {minimumFractionDigits: 2}), bold: true }),
+        new Paragraph({ text: 'USD KDV Haric: ' + toplamUSD_H.toLocaleString('tr-TR', {minimumFractionDigits: 2}) }),
+        new Paragraph({ text: 'USD KDV: ' + toplamUSD_K.toLocaleString('tr-TR', {minimumFractionDigits: 2}) }),
+        new Paragraph({ text: 'USD KDV Dahil: ' + toplamUSD_D.toLocaleString('tr-TR', {minimumFractionDigits: 2}), bold: true })
+      ]
+    }]
+  });
+  
+  const blob = await Packer.toBlob(doc);
+  const tarih = new Date().toISOString().split('T')[0];
+  const fileName = toLatin(aktifProje) + '_' + toLatin(kategori) + '_' + tip + '_' + tarih + '.docx';
+  saveAs(blob, fileName);
+  
+  showUyari(kategori + ' kategorisi Word olarak indirildi!', "success");
+}
+
+async function exportAllToWord(tip) {
+  if (!window.docx) {
+    showUyari('Word kütüphanesi yüklenemedi. Sayfayı yenileyin.', 'danger');
+    return;
+  }
+  
+  const { Document, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, WidthType, AlignmentType, Packer } = docx;
+  
+  const toLatin = (text) => {
+    if (!text) return '';
+    return String(text)
+      .replace(/Ğ/g, 'G').replace(/ğ/g, 'g')
+      .replace(/Ü/g, 'U').replace(/ü/g, 'u')
+      .replace(/Ş/g, 'S').replace(/ş/g, 's')
+      .replace(/İ/g, 'I').replace(/ı/g, 'i')
+      .replace(/Ö/g, 'O').replace(/ö/g, 'o')
+      .replace(/Ç/g, 'C').replace(/ç/g, 'c');
+  };
+  
+  const fiyatlarTum = [...products];
+  const projeOzel = (projeler[aktifProje] && projeler[aktifProje].ozelUrunler) || [];
+  fiyatlarTum.push(...projeOzel);
+  const projeVeri = projeler[aktifProje] || {};
+  
+  const kategoriler = {};
+  fiyatlarTum.forEach(f => {
+    const kat = f.kategori || "Diğer";
+    if (!kategoriler[kat]) kategoriler[kat] = [];
+    kategoriler[kat].push(f);
+  });
+  
+  let genelToplamTL_H = 0, genelToplamTL_K = 0, genelToplamTL_D = 0;
+  let genelToplamUSD_H = 0, genelToplamUSD_K = 0, genelToplamUSD_D = 0;
+  
+  const baslikTip = tip === 'maliyet' ? 'DDY MALIYETI - TUM KATEGORILER' : 'SUBE MALIYETI - TUM KATEGORILER';
+  const children = [
+    // Logolar
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      children: [
+        new ImageRun({
+          data: Uint8Array.from(atob(DDY_LOGO_BASE64.split(',')[1]), c => c.charCodeAt(0)),
+          transformation: { width: 128, height: 45 }
+        }),
+        new TextRun({ text: "     " }),
+        new ImageRun({
+          data: Uint8Array.from(atob(ARABICA_LOGO_BASE64.split(',')[1]), c => c.charCodeAt(0)),
+          transformation: { width: 61, height: 45 }
+        })
+      ]
+    }),
+    new Paragraph({ text: '' }),
+    new Paragraph({ text: baslikTip, heading: 'Heading1', alignment: AlignmentType.CENTER }),
+    new Paragraph({ text: 'Proje: ' + toLatin(aktifProje) }),
+    new Paragraph({ text: 'Tarih: ' + new Date().toLocaleDateString('tr-TR') }),
+    new Paragraph({ text: '' })
+  ];
+  
+  Object.keys(kategoriler).sort().forEach(kategori => {
+    const kategoriUrunler = kategoriler[kategori];
+    let toplamTL_H = 0, toplamTL_K = 0, toplamTL_D = 0;
+    let toplamUSD_H = 0, toplamUSD_K = 0, toplamUSD_D = 0;
+    
+    const tableData = [];
+    let satirNo = 1;
+    
+    // TL ürünler
+    kategoriUrunler.filter(f => f.para !== "USD").forEach(f => {
+      const adet = Number(projeVeri[f.ad] || 0);
+      let fiyatListesi = (Array.isArray(f.teklifler) && f.teklifler.length) ? 
+        f.teklifler.map(t => Number(t.fiyat) || 0) : [];
+      let birimFiyat = fiyatListesi.length ? Math.max(...fiyatListesi) : 0;
+      
+      if (tip === 'satis') {
+        const karOrani = getKarOrani(f.kategori);
+        birimFiyat = birimFiyat * (1 + karOrani);
+      }
+      
+      const kdvOrani = f.kategori === "Mobilya" ? KDV_MOBILYA : KDV_DIGER;
+      const kdvTutar = birimFiyat * kdvOrani;
+      const toplamFiyat = birimFiyat + kdvTutar;
+      
+      tableData.push([
+        satirNo++, toLatin(f.ad), adet,
+        birimFiyat.toFixed(2) + ' TL',
+        kdvTutar.toFixed(2) + ' TL',
+        toplamFiyat.toFixed(2) + ' TL'
+      ]);
+      
+      toplamTL_H += adet * birimFiyat;
+      toplamTL_K += adet * kdvTutar;
+      toplamTL_D += adet * toplamFiyat;
+    });
+    
+    // USD ürünler
+    kategoriUrunler.filter(f => f.para === "USD").forEach(f => {
+      const adet = Number(projeVeri[f.ad] || 0);
+      let fiyatListesi = (Array.isArray(f.teklifler) && f.teklifler.length) ? 
+        f.teklifler.map(t => Number(t.fiyat) || 0) : [];
+      let birimFiyat = fiyatListesi.length ? Math.max(...fiyatListesi) : 0;
+      
+      if (tip === 'satis') {
+        const karOrani = getKarOrani(f.kategori);
+        birimFiyat = birimFiyat * (1 + karOrani);
+      }
+      
+      const kdvOrani = f.kategori === "Mobilya" ? KDV_MOBILYA : KDV_DIGER;
+      const kdvTutar = birimFiyat * kdvOrani;
+      const toplamFiyat = birimFiyat + kdvTutar;
+      
+      tableData.push([
+        satirNo++, toLatin(f.ad), adet,
+        birimFiyat.toFixed(2) + ' USD',
+        kdvTutar.toFixed(2) + ' USD',
+        toplamFiyat.toFixed(2) + ' USD'
+      ]);
+      
+      toplamUSD_H += adet * birimFiyat;
+      toplamUSD_K += adet * kdvTutar;
+      toplamUSD_D += adet * toplamFiyat;
+    });
+    
+    // Kategori başlığı
+    children.push(new Paragraph({ text: toLatin(kategori), heading: 'Heading2' }));
+    
+    // Tablo
+    const tableRows = [
+      new TableRow({
+        children: [
+          new TableCell({ children: [new Paragraph({ text: 'NO', alignment: AlignmentType.CENTER, color: '000000' })] }),
+          new TableCell({ children: [new Paragraph({ text: 'URUN ADI', alignment: AlignmentType.CENTER, color: '000000' })] }),
+          new TableCell({ children: [new Paragraph({ text: 'ADET', alignment: AlignmentType.CENTER, color: '000000' })] }),
+          new TableCell({ children: [new Paragraph({ text: 'BIRIM FIYAT', alignment: AlignmentType.CENTER, color: '000000' })] }),
+          new TableCell({ children: [new Paragraph({ text: 'KDV', alignment: AlignmentType.CENTER, color: '000000' })] }),
+          new TableCell({ children: [new Paragraph({ text: 'TOPLAM FIYAT', alignment: AlignmentType.CENTER, color: '000000' })] })
+        ]
+      })
+    ];
+    
+    tableData.forEach(row => {
+      tableRows.push(new TableRow({
+        children: row.map((cell, idx) => new TableCell({ 
+          children: [new Paragraph({ text: String(cell), alignment: idx === 0 || idx === 2 ? AlignmentType.CENTER : (idx === 1 ? AlignmentType.LEFT : AlignmentType.RIGHT)
+         , color: '000000' })]
+        }))
+      }));
+    });
+    
+    children.push(new Table({ rows: tableRows, width: { size: 100, type: WidthType.PERCENTAGE } }));
+    children.push(new Paragraph({ text: '' }));
+    children.push(new Paragraph({ text: 'Toplamlar (' + toLatin(kategori) + ')', bold: true }));
+    children.push(new Paragraph({ text: 'TL KDV Haric: ' + toplamTL_H.toLocaleString('tr-TR', {minimumFractionDigits: 2}) }));
+    children.push(new Paragraph({ text: 'TL KDV: ' + toplamTL_K.toLocaleString('tr-TR', {minimumFractionDigits: 2}) }));
+    children.push(new Paragraph({ text: 'TL KDV Dahil: ' + toplamTL_D.toLocaleString('tr-TR', {minimumFractionDigits: 2}), bold: true }));
+    children.push(new Paragraph({ text: 'USD KDV Haric: ' + toplamUSD_H.toLocaleString('tr-TR', {minimumFractionDigits: 2}) }));
+    children.push(new Paragraph({ text: 'USD KDV: ' + toplamUSD_K.toLocaleString('tr-TR', {minimumFractionDigits: 2}) }));
+    children.push(new Paragraph({ text: 'USD KDV Dahil: ' + toplamUSD_D.toLocaleString('tr-TR', {minimumFractionDigits: 2}), bold: true }));
+    children.push(new Paragraph({ text: '' }));
+    
+    genelToplamTL_H += toplamTL_H;
+    genelToplamTL_K += toplamTL_K;
+    genelToplamTL_D += toplamTL_D;
+    genelToplamUSD_H += toplamUSD_H;
+    genelToplamUSD_K += toplamUSD_K;
+    genelToplamUSD_D += toplamUSD_D;
+  });
+  
+  // Genel toplam
+  children.push(new Paragraph({ text: 'GENEL TOPLAM', heading: 'Heading2' }));
+  children.push(new Paragraph({ text: 'TL KDV Haric: ' + genelToplamTL_H.toLocaleString('tr-TR', {minimumFractionDigits: 2}) }));
+  children.push(new Paragraph({ text: 'TL KDV: ' + genelToplamTL_K.toLocaleString('tr-TR', {minimumFractionDigits: 2}) }));
+  children.push(new Paragraph({ text: 'TL KDV Dahil: ' + genelToplamTL_D.toLocaleString('tr-TR', {minimumFractionDigits: 2}), bold: true }));
+  children.push(new Paragraph({ text: 'USD KDV Haric: ' + genelToplamUSD_H.toLocaleString('tr-TR', {minimumFractionDigits: 2}) }));
+  children.push(new Paragraph({ text: 'USD KDV: ' + genelToplamUSD_K.toLocaleString('tr-TR', {minimumFractionDigits: 2}) }));
+  children.push(new Paragraph({ text: 'USD KDV Dahil: ' + genelToplamUSD_D.toLocaleString('tr-TR', {minimumFractionDigits: 2}), bold: true }));
+  
+  const doc = new Document({ sections: [{ children }] });
+  
+  const blob = await Packer.toBlob(doc);
+  const tarih = new Date().toISOString().split('T')[0];
+  const fileName = toLatin(aktifProje) + '_TumKategoriler_' + tip + '_' + tarih + '.docx';
+  saveAs(blob, fileName);
+  
+  showUyari('Tum kategoriler Word olarak indirildi!', "success");
+}
+
+function exportAllToExcel(tip) {
+  if (!XLSX) {
+    showUyari('Excel kütüphanesi yüklenemedi. Sayfayı yenileyin.', 'danger');
+    return;
+  }
+  
+  const fiyatlarTum = [...products];
+  const projeOzel = (projeler[aktifProje] && projeler[aktifProje].ozelUrunler) || [];
+  fiyatlarTum.push(...projeOzel);
+  const projeVeri = projeler[aktifProje] || {};
+  
+  const kategoriler = {};
+  fiyatlarTum.forEach(f => {
+    const kat = f.kategori || "Diğer";
+    if (!kategoriler[kat]) kategoriler[kat] = [];
+    kategoriler[kat].push(f);
+  });
+  
+  const wb = XLSX.utils.book_new();
+  
+  Object.keys(kategoriler).sort().forEach(kategori => {
+    const kategoriUrunler = kategoriler[kategori];
+    
+    const data = [];
+    data.push(['Proje', aktifProje]);
+    data.push(['Kategori', kategori]);
+    data.push(['Tip', tip === 'maliyet' ? 'DDY Maliyet' : 'Sube Maliyet']);
+    data.push(['Tarih', new Date().toLocaleDateString('tr-TR')]);
+    data.push([]);
+    data.push(['NO', 'Ürün Adı', 'Adet', 'Birim Fiyat', 'KDV', 'Toplam Fiyat', 'Para']);
+    
+    let toplamTL_H = 0, toplamTL_K = 0, toplamTL_D = 0;
+    let toplamUSD_H = 0, toplamUSD_K = 0, toplamUSD_D = 0;
+    let satirNo = 1;
+    
+    kategoriUrunler.filter(f => f.para !== "USD").forEach(f => {
+      const adet = Number(projeVeri[f.ad] || 0);
+      let fiyatListesi = (Array.isArray(f.teklifler) && f.teklifler.length) ? 
+        f.teklifler.map(t => Number(t.fiyat) || 0) : [];
+      let birimFiyat = fiyatListesi.length ? Math.max(...fiyatListesi) : 0;
+      
+      if (tip === 'satis') {
+        const karOrani = getKarOrani(f.kategori);
+        birimFiyat = birimFiyat * (1 + karOrani);
+      }
+      
+      const kdvOrani = f.kategori === "Mobilya" ? KDV_MOBILYA : KDV_DIGER;
+      const kdvTutar = birimFiyat * kdvOrani;
+      const toplamFiyat = birimFiyat + kdvTutar;
+      
+      data.push([satirNo++, f.ad, adet, birimFiyat.toFixed(2), kdvTutar.toFixed(2), toplamFiyat.toFixed(2), 'TL']);
+      
+      toplamTL_H += adet * birimFiyat;
+      toplamTL_K += adet * kdvTutar;
+      toplamTL_D += adet * toplamFiyat;
+    });
+    
+    kategoriUrunler.filter(f => f.para === "USD").forEach(f => {
+      const adet = Number(projeVeri[f.ad] || 0);
+      let fiyatListesi = (Array.isArray(f.teklifler) && f.teklifler.length) ? 
+        f.teklifler.map(t => Number(t.fiyat) || 0) : [];
+      let birimFiyat = fiyatListesi.length ? Math.max(...fiyatListesi) : 0;
+      
+      if (tip === 'satis') {
+        const karOrani = getKarOrani(f.kategori);
+        birimFiyat = birimFiyat * (1 + karOrani);
+      }
+      
+      const kdvOrani = f.kategori === "Mobilya" ? KDV_MOBILYA : KDV_DIGER;
+      const kdvTutar = birimFiyat * kdvOrani;
+      const toplamFiyat = birimFiyat + kdvTutar;
+      
+      data.push([satirNo++, f.ad, adet, birimFiyat.toFixed(2), kdvTutar.toFixed(2), toplamFiyat.toFixed(2), 'USD']);
+      
+      toplamUSD_H += adet * birimFiyat;
+      toplamUSD_K += adet * kdvTutar;
+      toplamUSD_D += adet * toplamFiyat;
+    });
+    
+    data.push([]);
+    data.push(['Toplamlar']);
+    data.push(['TL KDV Haric', toplamTL_H.toFixed(2)]);
+    data.push(['TL KDV', toplamTL_K.toFixed(2)]);
+    data.push(['TL KDV Dahil', toplamTL_D.toFixed(2)]);
+    data.push(['USD KDV Haric', toplamUSD_H.toFixed(2)]);
+    data.push(['USD KDV', toplamUSD_K.toFixed(2)]);
+    data.push(['USD KDV Dahil', toplamUSD_D.toFixed(2)]);
+    
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    XLSX.utils.book_append_sheet(wb, ws, kategori.substring(0, 31));
+  });
+  
+  const tarih = new Date().toISOString().split('T')[0];
+  const tipAdi = tip === 'maliyet' ? 'DDY_Maliyet' : 'Sube_Maliyet';
+  const fileName = `${aktifProje}_TumKategoriler_${tipAdi}_${tarih}.xlsx`;
+  XLSX.writeFile(wb, fileName);
+  
+  showUyari('Tum kategoriler Excel olarak indirildi!', "success");
+}
+
+
+function adetGuncelle(urun,val){
+ if(!projeler[aktifProje])projeler[aktifProje]={};
+ projeler[aktifProje][urun]=Number(val)||0;
+ localStorage.setItem("projeler",JSON.stringify(projeler));
+ yukle();
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+  // İlk yüklemede kategorileri kaydet
+  if (!localStorage.getItem("kategoriler")) {
+    localStorage.setItem("kategoriler", JSON.stringify(KATEGORILER));
+  }
+  
+  initializeProducts();
+  initializeKarOranlari();
+  renderTeklifler();
+  renderProjeler();
+  switchSection('proje');
+  
+  // Touchpad swipe support for product modal
+  const productModal = document.getElementById("productModal");
+  if (productModal) {
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const minSwipeDistance = 50;
+    
+    productModal.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    
+    productModal.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    }, { passive: true });
+    
+    // Mouse swipe for touchpad
+    let mouseStartX = 0;
+    let isMouseDown = false;
+    
+    productModal.addEventListener('mousedown', (e) => {
+      if (editingIndex !== -1) {
+        isMouseDown = true;
+        mouseStartX = e.screenX;
+      }
+    });
+    
+    productModal.addEventListener('mouseup', (e) => {
+      if (isMouseDown && editingIndex !== -1) {
+        const mouseEndX = e.screenX;
+        const diff = mouseStartX - mouseEndX;
+        
+        if (Math.abs(diff) > minSwipeDistance) {
+          if (diff > 0) {
+            navigateProduct(1); // Sağa kaydır = sonraki
+          } else {
+            navigateProduct(-1); // Sola kaydır = önceki
+          }
+        }
+      }
+      isMouseDown = false;
+    });
+    
+    productModal.addEventListener('mouseleave', () => {
+      isMouseDown = false;
+    });
+    
+    function handleSwipe() {
+      if (editingIndex === -1) return;
+      
+      const diff = touchStartX - touchEndX;
+      if (Math.abs(diff) > minSwipeDistance) {
+        if (diff > 0) {
+          navigateProduct(1); // Sola kaydır = sonraki
+        } else {
+          navigateProduct(-1); // Sağa kaydır = önceki
+        }
+      }
+    }
+  }
+  
+  // Kısayol inputları için klavye yakalama
+  document.addEventListener('keydown', function(e) {
+    const target = e.target;
+    if (target && target.classList && target.classList.contains('shortcut-input')) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      let keys = [];
+      if (e.ctrlKey || e.metaKey) keys.push('Ctrl');
+      if (e.shiftKey) keys.push('Shift');
+      if (e.altKey) keys.push('Alt');
+      
+      // Ana tuşu ekle
+      if (e.key === 'Control' || e.key === 'Shift' || e.key === 'Alt' || e.key === 'Meta') {
+        return; // Sadece modifier tuşu basıldı, bekle
+      }
+      
+      let mainKey = e.key;
+      if (e.key === 'ArrowLeft') mainKey = 'Left';
+      else if (e.key === 'ArrowRight') mainKey = 'Right';
+      else if (e.key === 'ArrowUp') mainKey = 'Up';
+      else if (e.key === 'ArrowDown') mainKey = 'Down';
+      else if (e.key === ' ') mainKey = 'Space';
+      else if (e.key.length === 1) mainKey = e.key.toUpperCase();
+      else mainKey = e.key;
+      
+      keys.push(mainKey);
+      target.value = keys.join('+');
+    }
+  });
+});
+</script>
+
+
+<script>
+// Giriş kontrolü
+
+// SHA-256 hash fonksiyonu
+async function sha256(message) {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashHex;
+}
+
+const VALID_PASSWORD_HASH = "0352337fdecfe1078dbc9815ab93fa22c3d0fb06149fc120a9d9ec460e766873";
+
+// Sayfa yüklendiğinde oturum kontrolü
+window.addEventListener('DOMContentLoaded', function() {
+  const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+  if (isLoggedIn === 'true') {
+    showMainContent();
+  }
+});
+
+async function checkLogin() {
+  const password = document.getElementById('loginPassword').value;
+  const errorDiv = document.getElementById('loginError');
+  
+  // Şifreyi hash'le
+  const passwordHash = await sha256(password);
+  
+  if (passwordHash === VALID_PASSWORD_HASH) {
+    sessionStorage.setItem('isLoggedIn', 'true');
+    errorDiv.style.display = 'none';
+    showMainContent();
+  } else {
+    errorDiv.style.display = 'block';
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('loginPassword').focus();
+  }
+}
+
+function showMainContent() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'block';
+}
+
+// Enter tuşu ile giriş
+document.addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    const loginScreen = document.getElementById('loginScreen');
+    if (loginScreen && loginScreen.style.display !== 'none') {
+      checkLogin();
+    }
+  }
+});
+
+// Çıkış fonksiyonu
+function logout() {
+  sessionStorage.removeItem('isLoggedIn');
+  location.reload();
+}
+</script>
+</body>
+</html>
