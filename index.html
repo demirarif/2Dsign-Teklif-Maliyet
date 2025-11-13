@@ -814,7 +814,14 @@ document.addEventListener('keypress', function(e) {
 // === SUPABASE ENTEGRASYONU ===
 const SUPABASE_URL = 'https://giluxnjfelgxsusipurj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdpbHV4bmpmZWxneHN1c2lwdXJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4ODg2NTEsImV4cCI6MjA3ODQ2NDY1MX0.WWvHIaA2tM3SgimrSl5IRzhwCII4MSWb8gr6DCf1Sm4';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  global: {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }
+});
 
 // Supabase'e kaydetme
 async function saveToSupabase(dataKey, dataValue) {
